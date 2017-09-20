@@ -21,7 +21,6 @@ namespace DealerContractArchive.Controllers
         private const string GemboxDocumentKey = "DTJX-2LSB-QJV3-R3XP";
 
         [HttpGet]
-        //[Produces("text/html")] //doesnt work
         public IActionResult GetDocument([FromQuery] int contractId, [FromQuery] string docName)
         {
             using (var context = new DealerContractContext())
@@ -42,7 +41,6 @@ namespace DealerContractArchive.Controllers
             //return View();
         }
         [HttpGet]
-        [Route("api/test")]
         public IActionResult GetDocumentPdf() //works!
         {
             ComponentInfo.SetLicense(GemboxDocumentKey);

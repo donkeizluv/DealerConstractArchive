@@ -15,7 +15,8 @@ namespace DealerContractArchive.Controllers
     {
         // GET: /<controller>/
         //https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting
-        public IActionResult Index([FromQuery] int? contractId)
+        [HttpGet]
+        public IActionResult GetScan([FromQuery] int? contractId)
         {
             if (contractId == null) return BadRequest();
             if((contractId?? -1) < 0) return BadRequest(); //auto increment index cant be negative

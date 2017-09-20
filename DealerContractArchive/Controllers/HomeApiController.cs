@@ -14,10 +14,11 @@ using DealerContractArchive.Helper;
 
 namespace DealerContractArchive.Views
 {
-    [Route("api/[controller]")]
+    [Route("api/HomeApi/[action]")]
     public class HomeApiController : Controller
     {
-        [HttpGet("GetContractViewerModel")]
+        //[HttpGet("GetContractViewerModel")]
+        [HttpGet()]
         public ContractViewerModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
         {
             var model = new ContractViewerModel();
@@ -44,7 +45,8 @@ namespace DealerContractArchive.Views
             return model;
         }
 
-        [HttpPost("AddNewContract")]
+        //[HttpPost("AddNewContract")]
+        [HttpPost()]
         public IActionResult AddNewContract([FromBody] ContractModel contract)
         {
             //NYI: validate data
@@ -87,7 +89,8 @@ namespace DealerContractArchive.Views
         private const string AcceptedUploadType = "application/pdf";
         private readonly double MinFileLength = 0;
 
-        [HttpPost("UploadScan")]
+        //[HttpPost("UploadScan")]
+        [HttpPost()]
         public IActionResult UploadScan([FromQuery]int contractId)
         {
             var files = Request.Form.Files;

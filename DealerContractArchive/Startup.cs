@@ -48,9 +48,9 @@ namespace DealerContractArchive
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}");
-                routes.MapRoute(
-                   name: "api",
-                   template: "api/{controller}/{action}");
+                //routes.MapRoute(
+                //   name: "api",
+                //   template: "api/{controller}/{action}");
             });
         }
     }
