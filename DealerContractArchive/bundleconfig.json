@@ -1,0 +1,30 @@
+﻿// Configure bundling and minification for the project.
+// More info at https://go.microsoft.com/fwlink/?LinkId=808241
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    // An array of relative input file paths. Globbing patterns supported
+    "inputFiles": [
+      "wwwroot/css/site.css",
+      "wwwroot/css/searchbar.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/Home/Home.min.js",
+    "inputFiles": [
+      "wwwroot/js/Home/Components/ContractsListing.js",
+      "wwwroot/js/Home/Components/NewContractModal.js",
+      "wwwroot/js/Home/Components/PrintDocumentModal.js",
+      "wwwroot/js/Home/Components/UploadScanModal.js",
+      "wwwroot/js/Home/Home.js"
+    ],
+    // Optionally specify minification options
+    "minify": {
+      "termSemicolons": true,
+      "enabled": true,
+      "renameLocals": false
+    },
+    // Optionally generate .map file
+    "sourceMap": false
+  }
+]

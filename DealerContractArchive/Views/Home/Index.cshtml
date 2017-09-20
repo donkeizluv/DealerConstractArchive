@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<!--Constract-Listing-Template-->
+@Html.Partial("_LoginTemplate")
+@Html.Partial("_ContractsListingTemplate")
+@Html.Partial("_AddContractModalTemplate")
+@Html.Partial("_UploadScannedModalTemplate")
+@Html.Partial("_PrintDocumentModalTemplate")
+    &nbsp;
+<div id="app" class="text-center">
+    <router-view class="view">
+    </router-view>
+</div>
+
+
+<environment include="Development">
+    <!--vue related-->
+    <script src="~/lib/vue/dist/vue.js"></script>
+    <script src="~/lib/axios/dist/axios.js"></script>
+    <script src="~/lib/vee-validate/dist/vee-validate.js"></script>
+    <script src="~/lib/vue-router/dist/vue-router.js"></script>
+    <script src="~/lib/vue-clip/dist/vue-clip.js"></script>
+
+    <script src="~/js/Home/Components/NewContractModal.js"></script>
+    <script src="~/js/Home/Components/PrintDocumentModal.js"></script>
+    <script src="~/js/Home/Components/UploadScanModal.js"></script>
+    <script src="~/js/Home/Components/ContractsListing.js"></script>
+    <script src="~/js/Home/Components/Login.js"></script>
+    <script src="~/js/Home/Home.js"></script>
+</environment>
+<!--prod-->
+<environment exclude="Development">
+    <!--vue related-->
+    <script src="~/lib/vue/dist/vue.min.js"></script>
+    <script src="~/lib/axios/dist/axios.min.js"></script>
+    <script src="~/lib/vee-validate/dist/vee-validate.min.js"></script>
+    <script src="~/lib/vue-router/dist/vue-router.min.js"></script>
+    <script src="~/lib/vue-clip/dist/vue-clip.min.js"></script>
+
+    <script src="~/js/Home/Components/NewContractModal.js"></script>
+    <script src="~/js/Home/Components/PrintDocumentModal.js"></script>
+    <script src="~/js/Home/Components/UploadScanModal.js"></script>
+    <script src="~/js/Home/Components/ContractsListing.js"></script>
+    <script src="~/js/Home/Components/Login.js"></script>
+    <script src="~/js/Home/Home.js"></script>
+
+    @*<script src="~/js/Home/Home.min.js"></script>*@
+</environment>
