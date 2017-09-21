@@ -30,7 +30,6 @@ namespace DealerContractArchive
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             EnviromentHelper.RootPath = env.ContentRootPath;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -40,9 +39,7 @@ namespace DealerContractArchive
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

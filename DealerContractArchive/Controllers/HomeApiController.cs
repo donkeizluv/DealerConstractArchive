@@ -14,6 +14,9 @@ using DealerContractArchive.Helper;
 
 namespace DealerContractArchive.Views
 {
+    //2 choices:
+    //route defined in each controler or
+    //global route in startup
     [Route("api/HomeApi/[action]")]
     public class HomeApiController : Controller
     {
