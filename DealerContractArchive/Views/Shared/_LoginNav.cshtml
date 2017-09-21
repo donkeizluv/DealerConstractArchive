@@ -1,0 +1,18 @@
+﻿<ul class="nav navbar-nav navbar-right">
+    @using System.Security.Claims;
+    @if (!User.Identities.Any(u => u.IsAuthenticated))
+    {
+        <li><a asp-area="" asp-controller="Account" asp-action="Login">Log in</a></li>
+    }
+    else
+    {
+        <li>
+            <a asp-area="" asp-controller="Account" asp-action="Info">
+                Hello,
+                @User.Identities.First(u => u.IsAuthenticated &&
+                                u.HasClaim(c => c.Type == ClaimTypes.Name)).FindFirst(ClaimTypes.Name).Value !
+            </a>
+        </li>
+        <li><a asp-area="" asp-controller="Account" asp-action="LogOut">Logout</a></li>
+    }
+</ul>

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using DealerContractArchive.Helper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace DealerContractArchive
 {
@@ -19,6 +21,15 @@ namespace DealerContractArchive
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //auth service
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.LoginPath = new PathString("/Account/Login/");
+                    options.AccessDeniedPath = new PathString("/Account/Forbidden/");
+                });
+
             //https://github.com/aspnet/Mvc/issues/4842
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -30,6 +41,7 @@ namespace DealerContractArchive
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             EnviromentHelper.RootPath = env.ContentRootPath;
+            app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -10,12 +10,17 @@
     <PackageReference Include="BuildBundlerMinifier" Version="2.5.357" />
     <PackageReference Include="gembox.document" Version="27.3.30.1087" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.0" />
   </ItemGroup>
@@ -27,7 +32,6 @@
   <ItemGroup>
     <Folder Include="EntityModels\" />
     <Folder Include="Helper\" />
-    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>
