@@ -26,8 +26,11 @@ namespace DealerContractArchive
                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
                 options =>
                 {
-                    options.LoginPath = new PathString("/Account/Login/");
-                    options.AccessDeniedPath = new PathString("/Account/Forbidden/");
+                    // access inner page w/o cred will get redirected to this
+                    options.LoginPath = new PathString("/Account/Login");
+                    options.AccessDeniedPath = new PathString("/Account/Forbidden");
+                    options.LogoutPath = new PathString("/Account/Logout");
+                    options.ReturnUrlParameter = "returnUrl";
                 });
 
             //https://github.com/aspnet/Mvc/issues/4842

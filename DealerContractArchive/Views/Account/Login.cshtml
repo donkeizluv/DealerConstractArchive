@@ -1,12 +1,11 @@
 ﻿<link rel="stylesheet" href="~/css/Account/Login.css" />
 <div class="wrapper">
     <form action="DoLogin" method="post" name="Login_Form" class="form-signin">
-        <h3 class="form-signin-heading">Welcome Back! Please Sign In</h3>
+        <h3 class="form-signin-heading">Welcome Back! Please Login</h3>
         <hr class="colorgraph"><br>
-
         <input type="text" class="form-control" name="userName" placeholder="Username" required="" autofocus="" />
         <input type="password" class="form-control" name="pwd" placeholder="Password" required="" />
-
         <button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit">Login</button>
+        <p class="login-status text-center text-danger">@ViewBag.LoginStatus</p>
     </form>
 </div>

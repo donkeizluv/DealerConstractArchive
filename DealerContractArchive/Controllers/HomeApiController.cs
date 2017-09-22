@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using DealerContractArchive.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,8 +21,8 @@ namespace DealerContractArchive.Views
     [Route("api/HomeApi/[action]")]
     public class HomeApiController : Controller
     {
-        //[HttpGet("GetContractViewerModel")]
-        [HttpGet()]
+        [HttpGet]
+        [Authorize]
         public ContractViewerModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
         {
             var model = new ContractViewerModel();
@@ -48,8 +49,8 @@ namespace DealerContractArchive.Views
             return model;
         }
 
-        //[HttpPost("AddNewContract")]
-        [HttpPost()]
+        [HttpPost]
+        [Authorize]
         public IActionResult AddNewContract([FromBody] ContractModel contract)
         {
             //NYI: validate data
@@ -92,8 +93,8 @@ namespace DealerContractArchive.Views
         private const string AcceptedUploadType = "application/pdf";
         private readonly double MinFileLength = 0;
 
-        //[HttpPost("UploadScan")]
-        [HttpPost()]
+        [HttpPost]
+        [Authorize]
         public IActionResult UploadScan([FromQuery]int contractId)
         {
             var files = Request.Form.Files;
