@@ -8,7 +8,7 @@
 @Html.Partial("_PrintDocumentModalTemplate")
     &nbsp;
 <div id="app" class="text-center">
-    <router-view class="view">
+    <router-view v-bind:role="role" ref="currentComponent" class="view">
     </router-view>
 </div>
 
@@ -21,6 +21,7 @@
     <script src="~/lib/vue-router/dist/vue-router.js"></script>
     <script src="~/lib/vue-clip/dist/vue-clip.js"></script>
 
+    <script src="~/js/Home/Components/API.js"></script>
     <script src="~/js/Home/Components/NewContractModal.js"></script>
     <script src="~/js/Home/Components/PrintDocumentModal.js"></script>
     <script src="~/js/Home/Components/UploadScanModal.js"></script>
@@ -44,5 +45,6 @@
     <script src="~/js/Home/Components/ContractsListing.js"></script>
     <script src="~/js/Home/Components/Login.js"></script>
     <script src="~/js/Home/Home.js"></script>*@
+    <script src="~/js/Home/Components/API.js"></script>
     <script src="~/js/Home/Home.min.js"></script>
 </environment>

@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DealContractArchiver.Models.Helper
+namespace DealContractArchiver.ViewModels.Helper
 {
     public static class ExpressionHelper
     {

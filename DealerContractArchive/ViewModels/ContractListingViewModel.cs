@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
-namespace DealContractArchiver.Models
+namespace DealContractArchiver.ViewModels
 {
     public enum FilterColumn
     {
@@ -15,9 +12,9 @@ namespace DealContractArchiver.Models
         TaxId = 5,
         Added = 6
     }
-    public class ContractViewerModel
+    public class ContractListingViewModel
     {
-        public List<ContractModel> ContractModels { get; set; }
+        public List<ContractViewModel> ContractModels { get; set; }
         public List<string> DocumentNames { get; set; }
         public bool IsFilterApplied { get; set; }
         public string FilterType { get; set; }
@@ -28,9 +25,9 @@ namespace DealContractArchiver.Models
         public int TotalPages { get; private set; }
         public int TotalRows { get; private set; }
 
-        public ContractViewerModel()
+        public ContractListingViewModel()
         {
-            ContractModels = new List<ContractModel>();
+            ContractModels = new List<ContractViewModel>();
             IsFilterApplied = false;
             FilterString = string.Empty;
         }

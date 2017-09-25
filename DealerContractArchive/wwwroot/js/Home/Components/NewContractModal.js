@@ -1,5 +1,5 @@
 ﻿//new contract modal component
-const NewContractModal = {
+var NewContractModal = {
     name: 'newcontract-modal',
     template: '#addcontract-modal-template',
     //props: parent data -> no mutate

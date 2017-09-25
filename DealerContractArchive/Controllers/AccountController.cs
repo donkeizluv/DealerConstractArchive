@@ -20,7 +20,7 @@ namespace AuthorizationLab.Controllers
 
         public enum LoginLevel
         {
-            NoAccess,
+            Error,
             User,
             ReadOnly,
             Admin
@@ -46,7 +46,7 @@ namespace AuthorizationLab.Controllers
         {
 
             var loginLevel = GetLoginLevel(userName, pwd);
-            if (loginLevel == LoginLevel.NoAccess) return LoginFail();
+            if (loginLevel == LoginLevel.Error) return LoginFail();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName, ClaimValueTypes.String, Issuer),
@@ -94,21 +94,20 @@ namespace AuthorizationLab.Controllers
         private bool ValidateCredentials(string userName, string password)
         {
             IntPtr tokenHandler = IntPtr.Zero;
-            bool isValid = LogonUser(userName, Domain, password, 3, 0, ref tokenHandler);
-            return isValid;
+            return LogonUser(userName, Domain, password, 3, 0, ref tokenHandler);
         }
         private LoginLevel GetLoginLevel(string userName, string pwd)
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(pwd))
-                return LoginLevel.NoAccess;
-            if (!ValidateCredentials(userName, pwd)) return LoginLevel.NoAccess;
+                return LoginLevel.Error;
+            if (!ValidateCredentials(userName, pwd)) return LoginLevel.Error;
             using (var context = new DealerContractContext())
             {
                 var user = context.Users.FirstOrDefault(u => string.Compare(u.Username, userName, true) == 0);
-                if (user == null) return LoginLevel.NoAccess;
+                if (user == null) return LoginLevel.Error;
                 var accountType = user.Type;
                 if (!Enum.IsDefined(typeof(LoginLevel), accountType))
-                    return LoginLevel.NoAccess;
+                    return LoginLevel.Error;
                 return (LoginLevel)Enum.Parse(typeof(LoginLevel), accountType);
             }   
         }

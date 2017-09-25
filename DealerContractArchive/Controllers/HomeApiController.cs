@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using DealContractArchiver.Models;
+using DealContractArchiver.ViewModels;
 using DealerContractArchive.EntityModels;
-using DealContractArchiver.Models.Helper;
+using DealContractArchiver.ViewModels.Helper;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.IO;
@@ -23,9 +23,9 @@ namespace DealerContractArchive.Views
     {
         [HttpGet]
         [Authorize]
-        public ContractViewerModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
+        public ContractListingViewModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
         {
-            var model = new ContractViewerModel();
+            var model = new ContractListingViewModel();
             //set model state
             var filterColumnName = FilterColumn.None;
             if (Enum.IsDefined(typeof(FilterColumn), type))
@@ -51,7 +51,7 @@ namespace DealerContractArchive.Views
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddNewContract([FromBody] ContractModel contract)
+        public IActionResult AddNewContract([FromBody] ContractViewModel contract)
         {
             //NYI: validate data
             if (contract == null) return BadRequest();
@@ -145,12 +145,12 @@ namespace DealerContractArchive.Views
             return true;
         }
 
-        private List<ContractModel> GetFilteredConstractsQuery(FilterColumn filterCol, string filterString, int page, out int totalRows)
+        private List<ContractViewModel> GetFilteredConstractsQuery(FilterColumn filterCol, string filterString, int page, out int totalRows)
         {
-            var list = new List<ContractModel>();
+            var list = new List<ContractViewModel>();
             using (var context = new DealerContractContext())
             {
-                int excludedRows = (page - 1) * ContractViewerModel.ItemPerPage;
+                int excludedRows = (page - 1) * ContractListingViewModel.ItemPerPage;
                 string processedFilterString = filterString;
                 if (filterCol == FilterColumn.Added) //convert username to int first
                 {
@@ -164,11 +164,11 @@ namespace DealerContractArchive.Views
                     .OrderBy(c => c.ContractId)
                     .Where(ExpressionHelper.GetContainsExpression<Contracts>(filterCol.ToString(), processedFilterString));
                 totalRows = query.Count();
-                query = query.Skip(excludedRows).Take(ContractViewerModel.ItemPerPage);
+                query = query.Skip(excludedRows).Take(ContractListingViewModel.ItemPerPage);
                 if (query.Any())
                 {
                     list = (from c in query
-                            select new ContractModel()
+                            select new ContractViewModel()
                             {
                                 ContractId = c.ContractId,
                                 Name = c.Name,
@@ -191,22 +191,22 @@ namespace DealerContractArchive.Views
             }
         }
 
-        private List<ContractModel> GetContracts(out int totalRows, int pageNum = 1)
+        private List<ContractViewModel> GetContracts(out int totalRows, int pageNum = 1)
         {
             int getPage = pageNum < 1 ? 1 : pageNum;
             using (var context = new DealerContractContext())
             {
                 totalRows = context.Contracts.Count();
-                int excludedRows = (getPage - 1) * ContractViewerModel.ItemPerPage;
+                int excludedRows = (getPage - 1) * ContractListingViewModel.ItemPerPage;
                 var query = context.Contracts
                     .OrderBy(c => c.ContractId)
                     .Skip(excludedRows)
-                    .Take(ContractViewerModel.ItemPerPage)
+                    .Take(ContractListingViewModel.ItemPerPage)
                     .AsQueryable();
                 //copy to model
                 //for some fucking reason, direct entity to json is a paint in the ass :/
                 var list = (from c in query
-                            select new ContractModel()
+                            select new ContractViewModel()
                             {
                                 ContractId = c.ContractId,
                                 Name = c.Name,

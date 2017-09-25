@@ -1,16 +1,16 @@
-﻿const GetContractsListApiUrl = "/api/HomeApi/GetContractViewerModel?";
-const AddContractApiUrl = "/api/HomeApi/AddNewContract";
-const UploadContractApiUrl = "/api/HomeApi/UploadScan";
-const GetScanPdfApiUrl = "/Scan/GetScan?contractId=";
-const GetDocumentApiUrl = "/Document/GetDocument?";
-const CurrentHost = window.location.protocol + '//' + window.location.host;
-
-const ContractsListing = {
+﻿var ContractsListing = {
     name: 'ContractsListing',
     template: '#Contracts-Listing-Template',
-    mounted: function () {
-        this.Innit();
-    },
+    //mounted: function () {
+    //    console.log("comp mounted");
+    //    if (this.role != "") {
+    //        console.log(this.role);
+    //        this.Innit();
+    //    }
+    //    else {
+    //        //show invalid role error
+    //    }
+    //},
 
     //if need of call modal globally arises
     //global resgister
@@ -21,12 +21,7 @@ const ContractsListing = {
         'printdocument-modal': PrintDocumentModal
     },
 
-    //props: {
-    //    contracts: {},
-    //    currentpage: 0,
-    //    totalpages: 0,
-    //    totalrows: 0
-    //},
+    props: ['role'],
 
     data: function () {
         return {
@@ -48,6 +43,11 @@ const ContractsListing = {
         };
     },
     computed: {
+        IsReadOnly: function () {
+            if (this.role == "ReadOnly")
+                return true;
+            return false;
+        },
         HasFilter: function () {
             var type = this.$data.SelectedFilterValue;
             var contains = this.$data.SearchString;
@@ -80,7 +80,7 @@ const ContractsListing = {
     watch: {
         $route: function(to, from) {
             //console.log(to);
-            //updates on backkey
+            //updates on back key
             this.$data.SearchString = to.query.contains;
             this.$data.SelectedFilterValue = to.query.type;
             this.$data.OnPage = to.query.page;
@@ -107,6 +107,7 @@ const ContractsListing = {
             this.LoadContracts(this.GetCurrentContractsListingApi);
         },
         //load contracts on startup
+        //loading animation?
         LoadContracts: function (url) {
             var that = this;
             //console.log(url);
@@ -119,7 +120,7 @@ const ContractsListing = {
                 })
                 .catch(function (error) {
                     console.log(error);
-                    console.log("Failed to fetch model");
+                    console.log("Failed to fetch model"); //display this somehow...
                 });
         },
 
@@ -128,11 +129,6 @@ const ContractsListing = {
             this.$data.TotalPages = this.$data.ContractViewerModel.TotalPages;
             this.$data.TotalRows = this.$data.ContractViewerModel.TotalRows;
         },
-
-        //contract grid row clicked
-        //DataRowClicked: function (clickContract) {
-        //    alert(clickContract.Name);
-        //},
 
         //add new row btn clicked
         AddNewContractClicked: function () {

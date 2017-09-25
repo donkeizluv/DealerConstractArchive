@@ -1,5 +1,5 @@
 ﻿//login component
-const Login = {
+var Login = {
     name: 'Login',
     template: '#login-template',
     //props: parent data -> no mutate

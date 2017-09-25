@@ -1,5 +1,5 @@
 ﻿//upload modal component
-const UploadModal = {
+var UploadModal = {
     name: 'upload-modal',
     template: '#uploadscanned-modal-template',
     //props: parent data -> no mutate

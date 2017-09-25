@@ -1,5 +1,5 @@
 ﻿//show document modal
-const PrintDocumentModal = {
+var PrintDocumentModal = {
     name: 'printdocument-modal',
     template: '#printdocument-modal-template',
     props: ['docnames', 'contractid'],

@@ -1,8 +1,8 @@
 ﻿using DealerContractArchive.EntityModels;
 
-namespace DealContractArchiver.Models
+namespace DealContractArchiver.ViewModels
 {
-    public class ContractModel
+    public class ContractViewModel
     {
         public int ContractId { get; set; }
         public string Name { get; set; }

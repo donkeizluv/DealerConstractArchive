@@ -18,4 +18,17 @@ Vue.use(VeeValidate);
 var vm = new Vue({
     el: "#app",
     router: router,
+    mounted: function () {
+        this.$data.role = getCookie("role");
+        if (this.$data.role != "") {
+            var comp = this.$refs.currentComponent;
+            comp.Innit();
+        }
+        else {
+            //show error
+        }
+    },
+    data: {
+        role: ""
+    }
 });
