@@ -40,8 +40,12 @@
                     <td>{{ contract.TaxId }}</td>
                     <td>{{ contract.Commission }}</td>
                     <td>
+                        @*can use asp here instead of vue :/
+                        pro using asp: more secure (no cookie lag on changing user Role)
+                        con: maybe more coupled btw controller and View
+
                         @*upload scan modal button*@
-                        <div v-if="!IsReadOnly && contract.ScannedContractUrl == null">
+                        <div v-if="!readonly && contract.ScannedContractUrl == null">
                             <button v-on:click="ShowUploadModalHandler(contract.ContractId)" class="btn-link">
                                 <span class="glyphicon glyphicon-arrow-up"></span> 
                             </button>
@@ -71,6 +75,7 @@
                 </tr>
             </tbody>
         </table>
+        @*make this a component*@
         @*pagination*@
         <div class="row">
                 <ul class="pagination pagination-sm">

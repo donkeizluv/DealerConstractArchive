@@ -1,16 +1,10 @@
 ﻿var ContractsListing = {
     name: 'ContractsListing',
     template: '#Contracts-Listing-Template',
-    //mounted: function () {
-    //    console.log("comp mounted");
-    //    if (this.role != "") {
-    //        console.log(this.role);
-    //        this.Innit();
-    //    }
-    //    else {
-    //        //show invalid role error
-    //    }
-    //},
+    mounted: function () {
+        //console.log("comp mounted");
+        this.Innit();
+    },
 
     //if need of call modal globally arises
     //global resgister
@@ -21,7 +15,7 @@
         'printdocument-modal': PrintDocumentModal
     },
 
-    props: ['role'],
+    props: ['readonly'],
 
     data: function () {
         return {
@@ -43,11 +37,6 @@
         };
     },
     computed: {
-        IsReadOnly: function () {
-            if (this.role == "ReadOnly")
-                return true;
-            return false;
-        },
         HasFilter: function () {
             var type = this.$data.SelectedFilterValue;
             var contains = this.$data.SearchString;

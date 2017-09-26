@@ -14,7 +14,7 @@ namespace DealerContractArchive.Controllers
     public class HomeController : Controller
     {
         [HttpGet]
-        [Authorize(Roles= "Admin, ReadOnly, User")]
+        [Authorize]
         public IActionResult Index()
         {
             string role = string.Empty;

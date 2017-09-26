@@ -19,16 +19,19 @@ var vm = new Vue({
     el: "#app",
     router: router,
     mounted: function () {
+        //console.log("app mounted");
         this.$data.role = getCookie("role");
-        if (this.$data.role != "") {
-            var comp = this.$refs.currentComponent;
-            comp.Innit();
-        }
-        else {
-            //show error
-        }
+        //if (this.$data.role != "ReadOnly")
+        //    this.$data.IsReadOnly = false;
     },
     data: {
         role: ""
+    },
+    computed: {
+        IsReadOnly: function () {
+            if (this.$data.role == "ReadOnly")
+                return true;
+            return false;
+        }
     }
 });

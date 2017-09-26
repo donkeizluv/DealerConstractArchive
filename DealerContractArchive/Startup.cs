@@ -30,6 +30,7 @@ namespace DealerContractArchive
                     options.LoginPath = new PathString("/Account/Login");
                     options.AccessDeniedPath = new PathString("/Account/Forbidden");
                     options.LogoutPath = new PathString("/Account/Logout");
+                    options.SlidingExpiration = true; //extend cookie exp as user still on the site
                     //just for fun, cant find a clean way to use this :/
                     //bc url query doesnt play well with form submit in Account/DoLogin
                     options.ReturnUrlParameter = "returnUrl"; 
