@@ -1,8 +1,4 @@
-﻿body {
-    padding-top: 50px;
-}
-
-.dropdown.dropdown-lg .dropdown-menu {
+﻿.dropdown.dropdown-lg .dropdown-menu {
     margin-top: -1px;
     padding: 6px 20px;
 }
@@ -36,7 +32,7 @@
     border-bottom-left-radius: 4px;
 }
 
-@media screen and (min-width: 768px) {
+@@media screen and (min-width: 768px) {
     #adv-search {
         width: 300px;
         margin: 0 auto;

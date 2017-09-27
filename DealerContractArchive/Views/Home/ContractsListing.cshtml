@@ -15,101 +15,106 @@
             </upload-modal>
             <!--search bar-->
             @*make this a component*@
-            @Html.Partial("_SearchBar")
-                
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <td><h4>#</h4></td>
-                        <td><h4>Name</h4></td>
-                        <td><h4>Address</h4></td>
-                        <td><h4>Tax Id</h4></td>
-                        <td><h4>Commision</h4></td>
-                        <td><h4>Scanned</h4></td>
-                        <td><h4>Effective</h4></td>
-                        <td><h4>Added By</h4></td>
-                        <td><h4>Document</h4></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @*how to click row*@
-                    @*<tr v-for="contract in Contracts" class="row" v-on:click="DataRowClicked(contract)">*@
-                    <tr v-for="contract in ContractModels">
-                        <td>{{ contract.ContractId }}</td>
-                        <td>{{ contract.Name }}</td>
-                        <td>{{ contract.Address }}</td>
-                        <td>{{ contract.TaxId }}</td>
-                        <td>{{ contract.Commission }}</td>
-                        <td>
-                            @*can use asp here instead of vue :/
-                        pro using asp: more secure (no cookie lag on changing user Role)
-                        con: maybe more coupled btw controller and View
+            <div class="row">
+                <div class="pull-left" style="padding-left: 20px">
+                    <button v-show="!readonly" v-on:click="AddNewContractClicked" class="btn btn-sm"><span class="glyphicon glyphicon-plus"></span> </button>
+                </div>
+                @*search component*@
+                <search-bar v-on:searchclicked="SearchButtonClicked"></search-bar>
+            </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <td><h4>#</h4></td>
+                            <td><h4>Name</h4></td>
+                            <td><h4>Address</h4></td>
+                            <td><h4>Tax Id</h4></td>
+                            <td><h4>Commision</h4></td>
+                            <td><h4>Scanned</h4></td>
+                            <td><h4>Effective</h4></td>
+                            <td><h4>Added By</h4></td>
+                            <td><h4>Document</h4></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @*how to click row*@
+                        @*<tr v-for="contract in Contracts" class="row" v-on:click="DataRowClicked(contract)">*@
+                        <tr v-for="contract in ContractModels">
+                            <td>{{contract.ContractId}}</td>
+                            <td>{{contract.Name}}</td>
+                            <td>{{contract.Address}}</td>
+                            <td>{{contract.TaxId}}</td>
+                            <td>{{contract.Commission}}</td>
+                            <td>
+                                @*can use asp here instead of vue :/
+                            pro using asp: more secure (no cookie lag on changing user Role)
+                            con: maybe more coupled btw controller and View
 
-                        @*upload scan modal button*@
-                            <div v-if="!readonly && contract.ScannedContractUrl == null">
-                                <button v-on:click="ShowUploadModalHandler(contract.ContractId)" class="btn-link">
-                                    <span class="glyphicon glyphicon-arrow-up"></span>
+                            @*upload scan modal button*@
+                                <div v-if="!readonly && contract.ScannedContractUrl == null">
+                                    <button v-on:click="ShowUploadModalHandler(contract.ContractId)" class="btn-link">
+                                        <span class="glyphicon glyphicon-arrow-up"></span>
+                                    </button>
+                                </div>
+                                @*show scan button*@
+                                <div v-else-if="contract.ScannedContractUrl != null">
+                                    <button v-on:click="OpenNewScanPage(contract.ContractId)" class="btn-link">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </button>
+                                </div>
+                                @*readonly*@
+                                <div v-else>
+                                    <span>...</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-success" v-if=contract.Effective>Yes</div>
+                                <div class="text-danger" v-else>No</div>
+                            </td>
+                            <td>{{contract.Username}}</td>
+                            <td>
+                                @*show document selector modal*@
+                                <button v-on:click="PrinDocumentModalHandler(contract.ContractId)" class="btn-link">
+                                    <span class="glyphicon glyphicon-print"></span>
                                 </button>
-                            </div>
-                            @*show scan button*@
-                            <div v-else-if="contract.ScannedContractUrl != null">
-                                <button v-on:click="OpenNewScanPage(contract.ContractId)" class="btn-link">
-                                    <span class="glyphicon glyphicon-eye-open"></span>
-                                </button>
-                            </div>
-                            @*readonly*@
-                            <div v-else>
-                                <span>...</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-success" v-if=contract.Effective>Yes</div>
-                            <div class="text-danger" v-else>No</div>
-                        </td>
-                        <td>{{ contract.Username }}</td>
-                        <td>
-                            @*show document selector modal*@
-                            <button v-on:click="PrinDocumentModalHandler(contract.ContractId)" class="btn-link">
-                                <span class="glyphicon glyphicon-print"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                @*make this a component*@
+                @*pagination*@
+                <div class="row">
+                    <ul class="pagination pagination-sm">
+                        @*goes to first*@
+                        <li v-if="OnPage == 1" class="disabled">
+                            <button class="btn btn-default" disabled="">&laquo;</button>
+                        </li>
+                        <li v-else>
+                            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(1)">&laquo;</button>
+                        </li>
+                        @*page number*@
+                        <li v-for="index in TotalPages">
+                            @*<router-link v-bind:to="GetSearchQueryRoute">{{index}}</router-link>*@
+                            <button v-bind:class="[index == OnPage ? 'btn btn-primary' : 'btn btn-default']"
+                                    type="button"
+                                    v-on:click="PageNavClicked(index)">
+                                {{index}}
                             </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            @*make this a component*@
-            @*pagination*@
-            <div class="row">
-                <ul class="pagination pagination-sm">
-                    @*goes to first*@
-                    <li v-if="OnPage == 1" class="disabled">
-                        <button class="btn btn-default" disabled="">&laquo;</button>
-                    </li>
-                    <li v-else>
-                        <button class="btn btn-default" type="button" v-on:click="PageNavClicked(1)">&laquo;</button>
-                    </li>
-                    @*page number*@
-                    <li v-for="index in TotalPages">
-                        @*<router-link v-bind:to="GetSearchQueryRoute">{{index}}</router-link>*@
-                        <button v-bind:class="[index == OnPage ? 'btn btn-primary' : 'btn btn-default']"
-                                type="button"
-                                v-on:click="PageNavClicked(index)">
-                            {{index}}
-                        </button>
-                    </li>
-                    @*goes to last*@
-                    <li v-if="OnPage == TotalPages" class="disabled">
-                        <button class="btn btn-default" disabled="">&raquo;</button>
-                    </li>
-                    <li v-else>
-                        <button class="btn btn-default" type="button" v-on:click="PageNavClicked(TotalPages)">&raquo;</button>
-                    </li>
-                </ul>
+                        </li>
+                        @*goes to last*@
+                        <li v-if="OnPage == TotalPages" class="disabled">
+                            <button class="btn btn-default" disabled="">&raquo;</button>
+                        </li>
+                        <li v-else>
+                            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(TotalPages)">&raquo;</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div><span>Total Records: {{TotalRows}}</span></div>
+                </div>
             </div>
-            <div class="row">
-                <div><span>Total Records: {{TotalRows}}</span></div>
-            </div>
-        </div>
 </template>
 <script>
     var ContractsListing = {
@@ -123,6 +128,7 @@
         //global resgister
         //Vue.component('upload', Upload)
         components: {
+            'search-bar': SearchBar,
             'newcontract-modal': NewContractModal,
             'upload-modal': UploadModal,
             'printdocument-modal': PrintDocumentModal
@@ -132,6 +138,14 @@
 
         data: function () {
             return {
+                //search related
+                //if we keep SearchModel here and ref this.SearchModel to SearchBar's SearchModel
+                //it will keep sync the values even though not clicking "search"
+                //so just store values instead of the object
+                //maybe change the values name to advoid confusing?
+                SearchString: "",
+                SelectedFilterValue: 2,
+
                 ContractViewerModel: [],
                 ContractModels: [],
                 TotalRows: 0,
@@ -139,8 +153,8 @@
                 OnPage: 0,
                 DocumentNames: [],
 
-                SelectedFilterValue: 2,
-                SearchString: "",
+                //SelectedFilterValue: 2,
+                //SearchString: "",
 
                 ShowAddContractModal: false,
                 ShowUploadModal: false,
@@ -257,8 +271,10 @@
                 this.LoadContracts(this.GetCurrentContractsListingApi);
             },
 
-            SearchButtonClicked: function () {
+            SearchButtonClicked: function (searchModel) {
                 //back to page 1 on search
+                this.$data.SelectedFilterValue = searchModel.SelectedFilterValue;
+                this.$data.SearchString = searchModel.SearchString;
                 this.$data.OnPage = 1;
                 //this will trigger route watch
                 router.push({ name: 'Index', query: this.GetSearchQuery(1) });

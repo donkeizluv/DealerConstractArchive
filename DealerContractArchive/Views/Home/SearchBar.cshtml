@@ -1,21 +1,16 @@
-﻿<div class="row">
-    @*add new button*@
-    @*should i move this to listing component?*@
-    <div class="pull-left" style="padding-left: 20px">
-        <button v-show="!readonly" v-on:click="AddNewContractClicked" class="btn btn-sm"><span class="glyphicon glyphicon-plus"></span> </button>
-    </div>
+﻿<template id="search-bar-template">
     <div class="col-xs-4 col-centered">
         <div class="input-group" id="adv-search">
-            <input v-on:keyup.enter="SearchButtonClicked" v-model="SearchString" type="text" class="form-control" placeholder="Search" />
+            <input v-on:keyup.enter="SearchButtonClicked" v-model="SearchModel.SearchString" type="text" class="form-control" placeholder="Search" />
             <div class="input-group-btn">
                 <div class="btn-group" role="group">
                     <div class="dropdown dropdown-lg">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <form  v-on:submit.prevent class="form-horizontal" role="form">
+                            <form v-on:submit.prevent class="form-horizontal" role="form">
                                 <div class="form-group">
                                     <label for="filter">Filter by</label>
-                                    <select v-model="SelectedFilterValue" name="filter" class="form-control">
+                                    <select v-model="SearchModel.SelectedFilterValue" name="filter" class="form-control">
                                         <option value="1">Index</option>
                                         <option value="2">Name</option>
                                         <option value="3">Phone</option>
@@ -26,7 +21,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="contains">Contains the words</label>
-                                    <input v-on:keyup.enter="SearchButtonClicked" name="contains" v-model="SearchString" class="form-control" type="text" />
+                                    <input v-on:keyup.enter="SearchButtonClicked" name="contains" v-model="SearchModel.SearchString" class="form-control" type="text" />
                                 </div>
                                 <button v-on:click="SearchButtonClicked" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                             </form>
@@ -37,4 +32,23 @@
             </div>
         </div>
     </div>
-</div>
+</template>
+<script>
+    var SearchBar = {
+        name: 'search-bar',
+        template: '#search-bar-template',
+        data: function () {
+            return {
+                SearchModel: {
+                    SelectedFilterValue: 2, //default: Name
+                    SearchString: ""
+                }
+            };
+        },
+        methods: {
+            SearchButtonClicked: function () {
+                this.$emit('searchclicked', this.$data.SearchModel);
+            }
+        }
+    }
+</script>
