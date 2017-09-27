@@ -1,4 +1,4 @@
-﻿<script type="text/x-template" id="printdocument-modal-template">
+﻿<template id="printdocument-modal-template">
     <transition name="modal">
         <div class="modal-mask">
             <div class="modal-wrapper">
@@ -24,4 +24,30 @@
             </div>
         </div>
     </transition>
+</template>
+<script>
+    //show document modal
+    var PrintDocumentModal = {
+        name: 'printdocument-modal',
+        template: '#printdocument-modal-template',
+        props: ['docnames', 'contractid'],
+        data: function () {
+            return {
+                SelectedDoc: ""
+            };
+        },
+
+        methods: {
+            OpenPrintPage: function () {
+                var url = CurrentHost + GetDocumentApiUrl +
+                    "contractid=" +
+                    this.contractid +
+                    "&docName=" +
+                    this.$data.SelectedDoc;
+
+                //console.log(url);
+                window.open(url);
+            }
+        }
+    }
 </script>

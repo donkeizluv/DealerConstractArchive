@@ -9,17 +9,26 @@
   {
     "outputFileName": "wwwroot/js/Home/Home.min.js",
     "inputFiles": [
-      "wwwroot/js/Home/Components/NewContractModal.js",
-      "wwwroot/js/Home/Components/PrintDocumentModal.js",
-      "wwwroot/js/Home/Components/UploadScanModal.js",
-      "wwwroot/js/Home/Components/ContractsListing.js",
       "wwwroot/js/Home/Home.js"
     ],
     "minify": {
       "outputMode": "multipleLines",
       "termSemicolons": true,
       "enabled": true,
-      "renameLocals": false
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Home/API.min.js",
+    "inputFiles": [
+      "wwwroot/js/Home/API.js",
+    ],
+    "minify": {
+      "outputMode": "multipleLines",
+      "termSemicolons": true,
+      "enabled": true,
+      "renameLocals": true
     },
     "sourceMap": false
   }
