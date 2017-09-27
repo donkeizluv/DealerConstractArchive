@@ -2,7 +2,7 @@
     name: 'ContractsListing',
     template: '#Contracts-Listing-Template',
     mounted: function () {
-        //console.log("comp mounted");
+        //setTimeout(this.Innit(), 5000); //does not work ?
         this.Innit();
     },
 
@@ -10,6 +10,7 @@
     //global resgister
     //Vue.component('upload', Upload)
     components: {
+        'loading-spinner': VueLoadingSpinner.Plane,
         'newcontract-modal': NewContractModal,
         'upload-modal': UploadModal,
         'printdocument-modal': PrintDocumentModal
@@ -19,6 +20,8 @@
 
     data: function () {
         return {
+            IsLoading: false, //too fast to use loading animation
+
             ContractViewerModel: [],
             ContractModels: [],
             TotalRows: 0,
@@ -99,6 +102,7 @@
         //loading animation?
         LoadContracts: function (url) {
             var that = this;
+            //that.$data.IsLoading = true; //way too fast to show loading animation, causes jerking in UI
             //console.log(url);
             axios.get(url)
                 .then(function (response) {
@@ -106,6 +110,7 @@
                     that.$data.ContractModels = response.data.ContractModels;
                     that.$data.DocumentNames = response.data.DocumentNames;
                     that.UpdatePagination();
+                    //that.$data.IsLoading = false; //hide loading animation
                 })
                 .catch(function (error) {
                     console.log(error);

@@ -25,7 +25,8 @@ var vm = new Vue({
         //    this.$data.IsReadOnly = false;
     },
     data: {
-        role: ""
+        role: "",
+        working: true
     },
     computed: {
         IsReadOnly: function () {
