@@ -6,11 +6,13 @@ using DealerContractArchive.Helper;
 using DealerContractArchive.EntityModels;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DealerContractArchive.Controllers
 {
+    [Authorize]
     public class ScanController : Controller
     {
         // GET: /<controller>/

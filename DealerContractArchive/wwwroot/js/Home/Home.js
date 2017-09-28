@@ -19,14 +19,10 @@ var vm = new Vue({
     el: "#app",
     router: router,
     mounted: function () {
-        //console.log("app mounted");
         this.$data.role = getCookie("role");
-        //if (this.$data.role != "ReadOnly")
-        //    this.$data.IsReadOnly = false;
     },
     data: {
         role: "",
-        working: true
     },
     computed: {
         IsReadOnly: function () {

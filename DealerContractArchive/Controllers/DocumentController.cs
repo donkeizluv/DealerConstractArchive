@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Net.Http.Headers;
 using System.Text;
 using GemBox.Document;
+using Microsoft.AspNetCore.Authorization;
 //using GemBox.Document;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DealerContractArchive.Controllers
 {
+    [Authorize]
     public class DocumentController : Controller
     {
         private const string GemboxDocumentKey = "DTJX-2LSB-QJV3-R3XP";

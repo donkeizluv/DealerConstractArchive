@@ -1,4 +1,4 @@
-﻿const GetContractsListApiUrl = "/API/ContractListing/GetContractViewerModel?";
+﻿const GetContractsListApiUrl = "/API/ContractListing/GetContractViewerModel?page={page}&filter={filter}&type={type}&contains={contains}";
 const AddContractApiUrl = "/API/ContractListing/AddNewContract";
 const UploadContractApiUrl = "/API/ContractListing/UploadScan";
 const GetScanPdfApiUrl = "/Scan/GetScan?contractId={id}";

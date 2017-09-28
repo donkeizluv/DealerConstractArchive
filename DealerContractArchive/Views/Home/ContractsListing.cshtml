@@ -1,4 +1,10 @@
-﻿<template id="contracts-listing-template">
+﻿@Html.Partial("NewContractModal")
+@Html.Partial("UploadScannedModal")
+@Html.Partial("PrintDocumentModal")
+@Html.Partial("SearchBar")
+@Html.Partial("PageNav")
+
+<template id="contracts-listing-template">
         <div>
             <!--pops up modal-->
             <printdocument-modal v-if="ShowDocumentModal"
@@ -82,34 +88,9 @@
                     </tbody>
                 </table>
 
-                @*make this a component*@
                 @*pagination*@
                 <div class="row">
-                    <ul class="pagination pagination-sm">
-                        @*goes to first*@
-                        <li v-if="OnPage == 1" class="disabled">
-                            <button class="btn btn-default" disabled="">&laquo;</button>
-                        </li>
-                        <li v-else>
-                            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(1)">&laquo;</button>
-                        </li>
-                        @*page number*@
-                        <li v-for="index in TotalPages">
-                            @*<router-link v-bind:to="GetSearchQueryRoute">{{index}}</router-link>*@
-                            <button v-bind:class="[index == OnPage ? 'btn btn-primary' : 'btn btn-default']"
-                                    type="button"
-                                    v-on:click="PageNavClicked(index)">
-                                {{index}}
-                            </button>
-                        </li>
-                        @*goes to last*@
-                        <li v-if="OnPage == TotalPages" class="disabled">
-                            <button class="btn btn-default" disabled="">&raquo;</button>
-                        </li>
-                        <li v-else>
-                            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(TotalPages)">&raquo;</button>
-                        </li>
-                    </ul>
+                    <page-nav v-on:pagenavclicked="PageNavClicked" v-bind:onpage="OnPage" v-bind:totalpages="TotalPages"></page-nav>
                 </div>
                 <div class="row">
                     <div><span>Total Records: {{TotalRows}}</span></div>
@@ -128,6 +109,7 @@
         //global resgister
         //Vue.component('upload', Upload)
         components: {
+            'page-nav': PageNav,
             'search-bar': SearchBar,
             'newcontract-modal': NewContractModal,
             'upload-modal': UploadModal,
@@ -172,23 +154,15 @@
                 return false;
             },
 
-            ContractsListingApiPrefix: function () {
-                return CurrentHost + GetContractsListApiUrl;
-            },
-
             GetCurrentContractsListingApi: function () {
                 var page = this.$data.OnPage;
                 if (page < 1 || page == null) page = 1;
-                var type = this.$data.SelectedFilterValue;
-                var contains = this.$data.SearchString;
-                var apiSuffix = "page=" + page;
-                apiSuffix = apiSuffix + "&filter=" + this.HasFilter;
-                if (this.HasFilter) {
-                    this.$data.SelectedFilterValue = type;
-                    this.$data.SearchString = contains;
-                    apiSuffix = apiSuffix + "&type=" + type + "&contains=" + contains;
-                }
-                return this.ContractsListingApiPrefix + apiSuffix;
+                var api = GetContractsListApiUrl;
+                api = api.replace("{page}", page);
+                api = api.replace("{filter}", this.HasFilter);
+                api = api.replace("{type}", this.$data.SelectedFilterValue);
+                api = api.replace("{contains}", this.$data.SearchString);
+                return CurrentHost + api;
             }
         },
         //notify router changes

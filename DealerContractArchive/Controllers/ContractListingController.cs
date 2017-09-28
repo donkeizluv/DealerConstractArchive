@@ -19,10 +19,10 @@ namespace DealerContractArchive.Views
     //route defined in each controler or
     //global route in startup
     [Route("API/ContractListing/[action]")]
+    [Authorize]
     public class ContractListingController : Controller
     {
         [HttpGet]
-        [Authorize]
         public ContractListingViewModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
         {
             var model = new ContractListingViewModel();
@@ -50,7 +50,7 @@ namespace DealerContractArchive.Views
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles ="Admin, User")]
         public IActionResult AddNewContract([FromBody] ContractViewModel contract)
         {
             //NYI: validate data
@@ -94,7 +94,7 @@ namespace DealerContractArchive.Views
         private readonly double MinFileLength = 0;
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, User")]
         public IActionResult UploadScan([FromQuery]int contractId)
         {
             var files = Request.Form.Files;
@@ -117,6 +117,7 @@ namespace DealerContractArchive.Views
             }
             return Ok();
         }
+
         private List<string> GetDocumentNames()
         {
             using (var context = new DealerContractContext())
@@ -130,6 +131,7 @@ namespace DealerContractArchive.Views
                 return list;
             }
         }
+
         private bool SaveScan(IFormFile file, int index)
         {
             //do save

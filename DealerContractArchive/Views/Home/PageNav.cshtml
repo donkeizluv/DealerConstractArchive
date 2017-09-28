@@ -1,0 +1,39 @@
+﻿<template id="page-nav-template">
+    <ul class="pagination pagination-sm">
+        @*goes to first*@
+        <li v-if="onpage == 1" class="disabled">
+            <button class="btn btn-default" disabled="">&laquo;</button>
+        </li>
+        <li v-else>
+            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(1)">&laquo;</button>
+        </li>
+        @*page number*@
+        <li v-for="index in totalpages">
+            <button v-bind:class="[index == onpage ? 'btn btn-primary' : 'btn btn-default']"
+                    type="button"
+                    v-on:click="PageNavClicked(index)">
+                {{index}}
+            </button>
+        </li>
+        @*goes to last*@
+        <li v-if="onpage == totalpages" class="disabled">
+            <button class="btn btn-default" disabled="">&raquo;</button>
+        </li>
+        <li v-else>
+            <button class="btn btn-default" type="button" v-on:click="PageNavClicked(totalpages)">&raquo;</button>
+        </li>
+    </ul>
+</template>
+
+<script>
+    var PageNav = {
+        name: 'page-nav',
+        template: '#page-nav-template',
+        props: ['onpage', 'totalpages'],
+        methods: {
+            PageNavClicked: function (page) {
+                this.$emit("pagenavclicked", page);
+            }
+        }
+    }
+</script>
