@@ -18,8 +18,8 @@ namespace DealerContractArchive.Views
     //2 choices:
     //route defined in each controler or
     //global route in startup
-    [Route("api/HomeApi/[action]")]
-    public class HomeApiController : Controller
+    [Route("API/ContractListing/[action]")]
+    public class ContractListingController : Controller
     {
         [HttpGet]
         [Authorize]

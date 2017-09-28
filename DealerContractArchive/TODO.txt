@@ -1,2 +1,3 @@
 ﻿- require specific Roles in API
 - makes SearchBar a component
+- re-name HomeApiController

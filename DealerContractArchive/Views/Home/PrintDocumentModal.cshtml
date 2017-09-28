@@ -39,12 +39,8 @@
 
         methods: {
             OpenPrintPage: function () {
-                var url = CurrentHost + GetDocumentApiUrl +
-                    "contractid=" +
-                    this.contractid +
-                    "&docName=" +
-                    this.$data.SelectedDoc;
-
+                var url = CurrentHost +
+                    GetDocumentApiUrl.replace("{id}", this.contractid).replace("{name}", this.$data.SelectedDoc);
                 //console.log(url);
                 window.open(url);
             }

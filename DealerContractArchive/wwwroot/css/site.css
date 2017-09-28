@@ -1,5 +1,4 @@
-﻿
-.container-table {
+﻿.container-table {
     display: table;
 }
 
@@ -19,7 +18,7 @@
     height: 50px;
 }
 .feelback-icon{
-    padding-left : 0px;
+    padding-left : 0;
     right: 10px;
 }
 .modal-mask {

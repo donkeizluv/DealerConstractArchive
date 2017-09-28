@@ -2,18 +2,18 @@
   "name": "asp.net",
   "private": true,
   "dependencies": {
-    "bootstrap": "v4.0.0-beta",
     "jquery": "3.2.1",
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
-    "vee-validate": "2.0.0-rc.17",
+    "vee-validate": "2.0.0-rc.18",
     "vue-router": "~2.7.0",
     "axios": "v0.16.2",
     "vue": "v2.4.4",
-    "vue-clip": "https://github.com/thetutlage/vue-clip.git#1.0.0"
+    "vue-clip": "https://github.com/thetutlage/vue-clip.git#1.0.0",
+    "bootstrap": "v3.3.7"
   },
   "resolutions": {
-    "vee-validate": "2.0.0-rc.17",
+    "vee-validate": "2.0.0-rc.18",
     "jquery": "3.2.1",
     "bootstrap": "v4.0.0-beta",
     "vue": "v2.4.4"
