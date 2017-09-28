@@ -10,7 +10,8 @@
     "axios": "v0.16.2",
     "vue": "v2.4.4",
     "vue-clip": "https://github.com/thetutlage/vue-clip.git#1.0.0",
-    "bootstrap": "v3.3.7"
+    "bootstrap": "v3.3.7",
+    "vuejs-paginate": "https://github.com/lokyoung/vuejs-paginate.git#1.2.0"
   },
   "resolutions": {
     "vee-validate": "2.0.0-rc.18",

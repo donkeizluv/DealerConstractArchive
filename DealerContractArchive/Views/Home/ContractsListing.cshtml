@@ -2,7 +2,7 @@
 @Html.Partial("UploadScannedModal")
 @Html.Partial("PrintDocumentModal")
 @Html.Partial("SearchBar")
-@Html.Partial("PageNav")
+@*@Html.Partial("PageNav")*@
 
 <template id="contracts-listing-template">
         <div>
@@ -90,7 +90,19 @@
 
                 @*pagination*@
                 <div class="row">
-                    <page-nav v-on:pagenavclicked="PageNavClicked" v-bind:onpage="OnPage" v-bind:totalpages="TotalPages"></page-nav>
+                    @*<page-nav v-on:pagenavclicked="PageNavClicked" v-bind:onpage="OnPage" v-bind:totalpages="TotalPages"></page-nav>*@
+                    @*https://github.com/lokyoung/vuejs-paginate*@
+                    <paginate :page-count="TotalPages"
+                              :click-handler="PageNavClicked"
+                              :page-range="8"
+                              :prev-text="'&lsaquo;'"
+                              :next-text="'&rsaquo;'"
+                              :page-class="'page-item'"
+                              :page-link-class="'page-link'"
+                              :container-class="'pagination pagination-md'">
+                    </paginate>
+
+
                 </div>
                 <div class="row">
                     <div><span>Total Records: {{TotalRows}}</span></div>
@@ -109,7 +121,8 @@
         //global resgister
         //Vue.component('upload', Upload)
         components: {
-            'page-nav': PageNav,
+            //'page-nav': PageNav,
+            'paginate': VuejsPaginate,
             'search-bar': SearchBar,
             'newcontract-modal': NewContractModal,
             'upload-modal': UploadModal,
