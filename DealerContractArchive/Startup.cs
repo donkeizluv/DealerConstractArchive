@@ -6,6 +6,9 @@ using Newtonsoft.Json.Serialization;
 using DealerContractArchive.Helper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
+using System.Net;
 
 namespace DealerContractArchive
 {
@@ -35,7 +38,11 @@ namespace DealerContractArchive
                     //bc url query doesnt play well with form submit in Account/DoLogin
                     options.ReturnUrlParameter = "returnUrl"; 
                 });
-
+            //enforce SSL
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new RequireHttpsAttribute());
+            //});
             //https://github.com/aspnet/Mvc/issues/4842
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -48,6 +55,8 @@ namespace DealerContractArchive
         {
             EnviromentHelper.RootPath = env.ContentRootPath;
             app.UseAuthentication();
+            //enforce SSL
+            //app.UseRewriter(new RewriteOptions().AddRedirectToHttps((int)HttpStatusCode.Redirect, 44395));
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -4,6 +4,8 @@
     <TargetFramework>net461</TargetFramework>
 	<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
 	<TypeScriptToolsVersion>2.5</TypeScriptToolsVersion>
+	<Description>DealerContractArchive site</Description>
+	<PackageId>DealerContractArchive</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />

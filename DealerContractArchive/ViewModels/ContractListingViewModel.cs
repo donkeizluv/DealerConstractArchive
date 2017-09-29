@@ -19,7 +19,7 @@ namespace DealContractArchiver.ViewModels
         public bool IsFilterApplied { get; set; }
         public string FilterType { get; set; }
         public string FilterString { get; set; }
-        public static int ItemPerPage { get; set; } = 10;
+        public static int ItemPerPage { get; set; } = 15;
 
         //update these every time add record
         public int TotalPages { get; private set; }

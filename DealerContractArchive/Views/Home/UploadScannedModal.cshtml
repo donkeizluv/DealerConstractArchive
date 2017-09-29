@@ -7,9 +7,9 @@
                         <h4>Upload PDF Document</h4>
                     </div>
                     <div class="modal-body">
-                        <vue-clip v-bind:options="options" 
-                                  :on-added-file="addedfile" 
-                                  :on-complete="uploadcompleted"
+                        <vue-clip :on-added-file="addedFile" 
+                                  :options="options" 
+                                  :on-complete="uploadCompleted"
                                   :total-progress="uploadprogresschange">
                             <template slot="clip-uploader-action">
                                 <div>
@@ -22,22 +22,26 @@
                                 </div>*@
                             </template>
                         </vue-clip>
-                        <div class="row">
-                            <div class="col-sm-3 fixed-height text-right">Filename:</div>
-                            <div class="col-sm-8 fixed-height text-left">{{Filename}}</div>
+                        <div class="row top-buffer">
+                            <div class="col-sm-3 text-right">Filename:</div>
+                            <div class="col-sm-8 text-left">{{Filename}}</div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-3 fixed-height text-right">Status:</div>
-                            <div class="col-sm-8 fixed-height text-danger text-left">{{Status}}</div>
+                        <div class="row top-buffer">
+                            <div class="col-sm-3 text-right">Status:</div>
+                            <div class="col-sm-8 text-danger text-left">{{Status}}</div>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"
-                                 v-bind:aria-valuenow="Progress" aria-valuemin="0" aria-valuemax="100" v-bind:style="progressStyle">
-                                {{Progress}}%
+                        @*doesnt really work*@
+                        @*<div class="row top-buffer">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar"
+                                     v-bind:aria-valuenow="Progress" aria-valuemin="0" aria-valuemax="100" v-bind:style="progressStyle">
+                                    {{Progress}}%
+                                </div>
                             </div>
-                        </div>
-
+                        </div>*@
                     </div>
+                    <br />
+                    <br />
                     <div class="modal-footer">
                         <button class="btn btn-default"v-on:click="$emit('close')" v-bind:disabled="Uploading == 1">
                             OK
@@ -71,32 +75,28 @@
                 options: {
                     method: 'post',
                     uploadMultiple: false,
-                    url: UploadContractApiUrl + "?contractId=" + this.contractid,
-                    paramName: 'file',
-                    maxFilesize: 10,
+                    url: UploadContractApiUrl.replace("{id}", this.contractid),
+                    maxFilesize: 5,
                     maxFiles: 1,
-                    acceptedFiles: {
-                        extensions: ['application/pdf'],
-                        message: 'You are uploading an invalid file!'
-                    }
+                    acceptedFiles: "application/pdf"
                 },
                 Uploading: 0,
                 Progress: 0,
                 Filename: "",
                 Status: "",
                 Uploadable: true
-
             };
         },
         methods: {
-            //showsucsess: function (file) {
-            //    console.log(file);
-            //},
-            addedfile: function (file) {
+            addedFile: function (file) {
                 this.$data.Uploading = 1;
                 this.$data.Filename = file.name;
+                //file properties havent fully populated at this time so next tick
+                this.$nextTick(function () {
+                    this.$data.Status = file.errorMessage;
+                })
             },
-            uploadcompleted: function (file, status, xhr) {
+            uploadCompleted: function (file, status, xhr) {
                 //console.log(xhr);
                 if (status != 'success') {
                     if (xhr.status == 500)

@@ -2,8 +2,12 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/DealerContractArchive",
+      "sslPort": 0
+    },
     "iisExpress": {
-      "applicationUrl": "http://localhost:53772/",
+      "applicationUrl": "http://localhost:7676",
       "sslPort": 0
     }
   },
