@@ -4,8 +4,8 @@ var router = new VueRouter({
     base: 'Home',
     //root: window.location.href,
     routes: [
-        { name: 'Default', path: '/', component: ContractsListing },
-        { name: 'Index', path: '/Index', component: ContractsListing } //retuns default page = 1
+        { name: 'Default', path: '/', component: DealerListing },
+        { name: 'Index', path: '/Index', component: DealerListing } //retuns default page = 1
         //{ name: 'Login', path: '/Login', component: Login }
         //{ path: '/:page/:type/:contains', component: ContractsListing }
     ]

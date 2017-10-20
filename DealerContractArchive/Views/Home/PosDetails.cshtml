@@ -1,0 +1,51 @@
+﻿<template id="pos-details-template">
+    <td colspan="9999">
+        <div class="left-buffer top-buffer bottom-buffer">
+            <div class="block-update-card">
+                <div class="update-card-body">
+                    <table class="table table-condensed">
+                        <thead class="">
+                            <tr>
+                                <td><h5>Code</h5></td>
+                                <td><h5>Name</h5></td>
+                                <td><h5>Batch</h5></td>
+                                <td><h5>Address</h5></td>
+                                <td><h5>Region</h5></td>
+                                <td><h5>Province</h5></td>
+                                <td><h5>Brand</h5></td>
+                                <td><h5>Bl</h5></td>
+                                <td><h5>Status</h5></td>
+                                <td><h5>Username</h5></td>
+                                <td>
+                                    <button v-show="!readonly" class="btn btn-sm">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tr v-for="oPos in pos">
+                            <td> {{oPos.PosCode}}</td>
+                            <td>{{oPos.PosName}}</td>
+                            <td>{{oPos.Batch}}</td>
+                            <td>{{oPos.Address}}</td>
+                            <td>{{oPos.Region}}</td>
+                            <td>{{oPos.Province}}</td>
+                            <td>{{oPos.Brand}}</td>
+                            <td>{{oPos.Bl}}</td>
+                            <td>{{oPos.Status}}</td>
+                            <td>{{oPos.Username}}</td>
+                            <td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+</td>
+</template>
+<script>
+    var PosDetails = {
+        name: 'pos-details',
+        template: '#pos-details-template',
+        props: ['pos']
+    }
+</script>

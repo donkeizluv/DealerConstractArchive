@@ -9,8 +9,11 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+*.xlsx
+*.xls
+*private_
 
-#my stuff
+#private stuff
 [Uu]ploadedScans
 [Pp]rintDocument
 

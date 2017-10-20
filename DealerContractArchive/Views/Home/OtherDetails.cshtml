@@ -1,0 +1,52 @@
+﻿<template id="other-details-template">
+    <td colspan="9999">
+        <div class="left-buffer top-buffer bottom-buffer">
+            <div class="block-update-card">
+                <div class="update-card-body">
+                    <div class="row">
+                        <div class="col-sm-2 text-right"><span class="text-info">Start Effective:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.StartEffectiveShortDate}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">End Effective:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.EndEffectiveShortDate}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 text-right"><span class="text-info">Representative:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Representative}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">Gender:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Gender}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">Postion:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Position}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 text-right"><span class="text-info">Owner:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Owner}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">HQ Address:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Hqaddress}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">Fax:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Fax}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 text-right"><span class="text-info">Delegate:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.Delegate}}</div>
+
+                        <div class="col-sm-2 text-right"><span class="text-info">Sub Delegate:</span></div>
+                        <div class="col-sm-2 text-left">{{dealer.SubDelegate}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</template>
+<script>
+    var OtherDetails = {
+        name: 'other-details',
+        template: '#other-details-template',
+        props: ['dealer'],
+    }
+
+</script>

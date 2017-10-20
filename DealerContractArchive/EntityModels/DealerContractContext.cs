@@ -7,23 +7,18 @@ namespace DealerContractArchive.EntityModels
     public partial class DealerContractContext : DbContext
     {
         public virtual DbSet<AccountType> AccountType { get; set; }
-        public virtual DbSet<Contracts> Contracts { get; set; }
-        public virtual DbSet<Documents> Documents { get; set; }
+        public virtual DbSet<Dealer> Dealer { get; set; }
+        public virtual DbSet<DealerGroup> DealerGroup { get; set; }
+        public virtual DbSet<Document> Document { get; set; }
+        public virtual DbSet<Pos> Pos { get; set; }
+        public virtual DbSet<Scan> Scan { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //TODO: config
                 optionsBuilder.UseSqlServer(@"data source=(localdb)\local;initial catalog=DealerContract;Integrated Security=true;");
-                //optionsBuilder.UseSqlServer(@"data source=PRD-VN-HDESK01\SQLEXPRESS;
-                //    initial catalog=DealerContract;
-                //    persist security info=True;
-                //    user id=sa_dev;password=760119;
-                //    MultipleActiveResultSets=True;
-                //    App=EntityFramework");
-
             }
         }
 
@@ -43,41 +38,87 @@ namespace DealerContractArchive.EntityModels
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<Contracts>(entity =>
+            modelBuilder.Entity<Dealer>(entity =>
             {
-                entity.HasKey(e => e.ContractId);
-
-                entity.Property(e => e.Address)
+                entity.Property(e => e.BussinessId)
                     .IsRequired()
-                    .HasMaxLength(150);
+                    .HasColumnType("nchar(20)");
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.DealerName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Delegate).HasMaxLength(50);
+
+                entity.Property(e => e.EndEffective).HasColumnType("date");
+
+                entity.Property(e => e.Fax).HasColumnType("nchar(20)");
+
+                entity.Property(e => e.GroupName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Hqaddress)
+                    .IsRequired()
+                    .HasColumnName("HQAddress")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Owner)
                     .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                    .HasColumnType("nchar(20)");
 
-                entity.Property(e => e.ScannedContractUrl).HasMaxLength(100);
+                entity.Property(e => e.Position)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RegisteredName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Representative)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StartEffective).HasColumnType("date");
+
+                entity.Property(e => e.SubDelegate).HasMaxLength(50);
 
                 entity.Property(e => e.TaxId)
                     .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                    .HasColumnType("nchar(20)");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Contracts)
-                    .HasForeignKey(d => d.UserId)
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasColumnType("nchar(50)");
+
+                entity.HasOne(d => d.GroupNameNavigation)
+                    .WithMany(p => p.Dealer)
+                    .HasForeignKey(d => d.GroupName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Contracts_Users");
+                    .HasConstraintName("FK_Dealer_DealerGroup");
+
+                entity.HasOne(d => d.UsernameNavigation)
+                    .WithMany(p => p.Dealer)
+                    .HasForeignKey(d => d.Username)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Dealer_Users");
             });
 
-            modelBuilder.Entity<Documents>(entity =>
+            modelBuilder.Entity<DealerGroup>(entity =>
             {
-                entity.HasKey(e => e.DocumentId);
+                entity.HasKey(e => e.GroupName);
 
+                entity.Property(e => e.GroupName)
+                    .HasMaxLength(50)
+                    .ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Document>(entity =>
+            {
                 entity.Property(e => e.Date).HasColumnType("date");
 
                 entity.Property(e => e.Filename)
@@ -89,20 +130,92 @@ namespace DealerContractArchive.EntityModels
                     .HasMaxLength(50);
             });
 
+            modelBuilder.Entity<Pos>(entity =>
+            {
+                entity.ToTable("POS");
+
+                entity.Property(e => e.Address).HasMaxLength(100);
+
+                entity.Property(e => e.Bl)
+                    .IsRequired()
+                    .HasColumnName("BL")
+                    .HasColumnType("nchar(20)");
+
+                entity.Property(e => e.Brand).HasColumnType("nchar(20)");
+
+                entity.Property(e => e.PosCode).HasColumnType("nchar(20)");
+
+                entity.Property(e => e.PosName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Province)
+                    .IsRequired()
+                    .HasColumnType("nchar(20)");
+
+                entity.Property(e => e.Region)
+                    .IsRequired()
+                    .HasColumnType("nchar(20)");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasColumnType("nchar(20)");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasColumnType("nchar(50)");
+
+                entity.HasOne(d => d.Dealer)
+                    .WithMany(p => p.Pos)
+                    .HasForeignKey(d => d.DealerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_POS_Dealer");
+
+                entity.HasOne(d => d.UsernameNavigation)
+                    .WithMany(p => p.Pos)
+                    .HasForeignKey(d => d.Username)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_POS_Users");
+            });
+
+            modelBuilder.Entity<Scan>(entity =>
+            {
+                entity.Property(e => e.FilePath)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.UploadDate).HasColumnType("date");
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasColumnType("nchar(50)");
+
+                entity.HasOne(d => d.Dealer)
+                    .WithMany(p => p.Scan)
+                    .HasForeignKey(d => d.DealerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Scan_Dealer");
+
+                entity.HasOne(d => d.UsernameNavigation)
+                    .WithMany(p => p.Scan)
+                    .HasForeignKey(d => d.Username)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Scan_Users");
+            });
+
             modelBuilder.Entity<Users>(entity =>
             {
-                entity.HasKey(e => e.UserId);
+                entity.HasKey(e => e.Username);
+
+                entity.Property(e => e.Username)
+                    .HasColumnType("nchar(50)")
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Type)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);

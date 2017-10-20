@@ -1,11 +1,18 @@
 ﻿body {
     padding-top: 40px;
 }
-
+.left-buffer{
+    margin-left: 50px;
+}
+.bottom-buffer{
+    margin-bottom: 25px;
+}
+.top-buffer {
+    margin-top: 25px;
+}
 .container-table {
     display: table;
 }
-
 .vertical-center-row {
     display: table-cell;
     vertical-align: middle;
@@ -15,9 +22,6 @@
     margin: 0 auto;
 }
 /*vue modal pop up*/
-.top-buffer {
-    margin-top: 25px;
-}
 .feelback-icon{
     padding-left : 0;
     right: 10px;
@@ -57,7 +61,7 @@
 
 .modal-container-sm {
     width: 400px;
-    height: 200px;
+    height: 230px;
     margin: 0px auto;
     padding: 5px 5px;
     background-color: #fff;
@@ -94,4 +98,33 @@
 .modal-leave-active .modal-container {
     -webkit-transform: scale(1.1);
     transform: scale(1.1);
+}
+/*card*/
+.block-update-card {
+    height: 100%;
+    border: 1px #FFFFFF solid;
+    /*width: 380px;*/
+    /*float: left;*/
+    margin-left: 10px;
+    margin-top: 0;
+    padding: 0;
+    box-shadow: 1px 1px 8px #d8d8d8;
+    background-color: #FFFFFF;
+}
+
+.block-update-card .update-card-body {
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+
+.block-update-card .update-card-body h4 {
+    color: #737373;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.block-update-card .update-card-body p {
+    color: #737373;
+    font-size: 12px;
 }

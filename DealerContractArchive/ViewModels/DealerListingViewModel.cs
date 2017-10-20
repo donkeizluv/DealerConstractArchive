@@ -12,9 +12,10 @@ namespace DealContractArchiver.ViewModels
         TaxId = 5,
         Added = 6
     }
-    public class ContractListingViewModel
+    public class DealerListingViewModel
     {
-        public List<ContractViewModel> ContractModels { get; set; }
+        //NYI: sort
+        public List<DealerViewModel> DealerModels { get; set; }
         public List<string> DocumentNames { get; set; }
         public bool IsFilterApplied { get; set; }
         public string FilterType { get; set; }
@@ -25,9 +26,9 @@ namespace DealContractArchiver.ViewModels
         public int TotalPages { get; private set; }
         public int TotalRows { get; private set; }
 
-        public ContractListingViewModel()
+        public DealerListingViewModel()
         {
-            ContractModels = new List<ContractViewModel>();
+            DealerModels = new List<DealerViewModel>();
             IsFilterApplied = false;
             FilterString = string.Empty;
         }

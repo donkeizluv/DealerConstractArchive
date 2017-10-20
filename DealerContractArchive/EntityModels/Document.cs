@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DealerContractArchive.EntityModels
 {
-    public partial class Documents
+    public partial class Document
     {
         public int DocumentId { get; set; }
         public string Name { get; set; }

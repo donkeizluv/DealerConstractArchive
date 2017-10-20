@@ -1,0 +1,335 @@
+﻿@Html.Partial("NewContractModal")
+@Html.Partial("UploadScannedModal")
+@Html.Partial("PrintDocumentModal")
+@Html.Partial("SearchBar")
+@Html.Partial("OtherDetails")
+@Html.Partial("PosDetails")
+
+@*@Html.Partial("PageNav")*@
+
+<template id="dealer-listing-template">
+    <div>
+        <!--pops up modal-->
+        @*<printdocument-modal v-if="ShowDocumentModal"
+                                 v-on:close="ShowDocumentModal = false"
+                                 v-bind:docnames="DocumentNames"
+                                 v-bind:contractid="ShowDocumentForId">
+            </printdocument-modal>
+            <newcontract-modal v-if="ShowAddContractModal"
+                               v-on:close="ShowAddContractModal = false">
+            </newcontract-modal>
+            <upload-modal v-if="ShowUploadModal"
+                          v-on:close="OnCloseUploadModal"
+                          v-bind:contractid="UploadToContractId">
+            </upload-modal>*@
+        <!--search bar-->
+        @*make this a component*@
+        <div class="row">
+            @*search component*@
+            <search-bar v-on:searchclicked="SearchButtonClicked"></search-bar>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td><button class="btn btn-link"  v-on:click="CollapseAll"><span class="glyphicon glyphicon-minus"></span> All</button></td>
+                    <td><h5>Group</h5></td>
+                    <td><h5>Name</h5></td>
+                    <td><h5>Resigtered Name</h5></td>
+                    <td><h5>Tax Id</h5></td>
+                    <td><h5>Effective</h5></td>
+                    <td><h5>Phone</h5></td>
+                    <td><h5>Username</h5></td>
+                    <td><h5>More</h5></td>
+                    <td>
+                        <button v-show="!readonly" v-on:click="AddNewDealerClicked" class="btn btn-sm">
+                            <span class="glyphicon glyphicon-plus"></span> 
+                        </button>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-for="dealer in DealerModels">
+                    <tr>
+                        <td><button v-on:click="TogglePosDetails(dealer.DealerId)" class="btn-xs btn-link" >
+                            <span class="glyphicon" v-bind:class="{'glyphicon-minus': IsShowingPosDetails(dealer.DealerId), 'glyphicon-plus': !IsShowingPosDetails(dealer.DealerId)}">
+                                </span>
+                            </button>
+                        </td>
+                        <td>{{dealer.GroupName}}</td>
+                        <td>{{dealer.DealerName}}</td>
+                        <td>{{dealer.RegisteredName}}</td>
+                        <td>{{dealer.TaxId}}</td>
+                        <td>{{dealer.EffectiveDayRemain}}</td>
+                        <td>{{dealer.Phone}}</td>
+                        <td>{{dealer.Username}}</td>
+                        <td><button class="btn-link" v-on:click="ToggleOtherDetails(dealer.DealerId)">&hellip;</button></td>
+                        <td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>
+                    </tr>
+                    @*expandable details*@
+                    <tr>
+                        @*any better ways to do this?*@
+                        <other-details v-bind:dealer="dealer" v-show="IsShowingOtherDetails(dealer.DealerId)"></other-details>
+                        <pos-details v-bind:pos="dealer.Pos" v-show="IsShowingPosDetails(dealer.DealerId)"></pos-details>
+                    </tr>
+
+                </template>
+            </tbody>
+        </table>
+
+        @*pagination*@
+        <div class="row">
+            @*<page-nav v-on:pagenavclicked="PageNavClicked" v-bind:onpage="OnPage" v-bind:totalpages="TotalPages"></page-nav>*@
+            @*https://github.com/lokyoung/vuejs-paginate*@
+            <page-nav :page-count="TotalPages"
+                      :click-handler="PageNavClicked"
+                      :page-range="8"
+                      :prev-text="'&lsaquo;'"
+                      :next-text="'&rsaquo;'"
+                      :page-class="'page-item'"
+                      :page-link-class="'page-link'"
+                      :container-class="'pagination pagination-md'">
+            </page-nav>
+
+
+        </div>
+        <div class="row">
+            <div><span>Total Records: {{TotalRows}}</span></div>
+        </div>
+    </div>
+</template>
+<script>
+    var DealerListing = {
+        name: 'DealerListing',
+        template: '#dealer-listing-template',
+        mounted: function () {
+            this.Innit();
+        },
+        //if need of call modal globally arises
+        //global resgister
+        //Vue.component('upload', Upload)
+        components: {
+            //'page-nav': PageNav,
+            'page-nav': VuejsPaginate,
+            'search-bar': SearchBar,
+            'newcontract-modal': NewContractModal,
+            'upload-modal': UploadModal,
+            'printdocument-modal': PrintDocumentModal,
+            'other-details': OtherDetails,
+            'pos-details': PosDetails
+        },
+        props: ['readonly'],
+        data: function () {
+            return {
+                //search related
+                //if we keep SearchModel here and ref this.SearchModel to SearchBar's SearchModel
+                //it will keep sync the values even though not clicking "search"
+                //so just store values instead of the object
+                //maybe change the values name to advoid confusing?
+                SearchString: "",
+                SelectedFilterValue: 2,
+
+                //listing, nav
+                DealerViewerModel: [],
+                DealerModels: [],
+                TotalRows: 0,
+                TotalPages: 0,
+                OnPage: 0,
+                DocumentNames: [],
+
+                //details section
+                ShowingPosDetailArray: [],
+                ShowingOtherDetailArray: [],
+
+                //modals
+                ShowAddDealerModal: false,
+                ShowUploadModal: false,
+                ShowDocumentModal: false,
+                UploadToDealerId: -1,
+                ShowDocumentForId: -1,
+
+
+            };
+        },
+        computed: {
+            HasFilter: function () {
+                var type = this.$data.SelectedFilterValue;
+                var contains = this.$data.SearchString;
+                if (type !== undefined && contains.length > 0) {
+                    return true;
+                }
+                return false;
+            },
+
+            GetCurrentDealerListingApi: function () {
+                var page = this.$data.OnPage;
+                if (page < 1 || page == null) page = 1;
+                var api = GetDealerListApiUrl;
+                api = api.replace("{page}", page);
+                api = api.replace("{filter}", this.HasFilter);
+                api = api.replace("{type}", this.$data.SelectedFilterValue);
+                api = api.replace("{contains}", this.$data.SearchString);
+                return CurrentHost + api;
+            }
+        },
+        //notify router changes
+        watch: {
+            $route: function (to, from) {
+                //console.log(to);
+                //updates on back key
+                this.$data.SearchString = to.query.contains;
+                this.$data.SelectedFilterValue = to.query.type;
+                this.$data.OnPage = to.query.page;
+                this.LoadDealers(this.GetCurrentDealerListingApi);
+            }
+        },
+        methods: {
+            //innit app
+            Innit: function () {
+                //restore page on pasted link
+                //var page = router.history.current.params.page;
+                var page = router.history.current.query.page;
+                if (page < 1 || page == null) page = 1;
+                var type = router.history.current.query.type;
+                if (type == undefined)
+                    type = 2; //default select filter: Name
+                var contains = router.history.current.query.contains;
+                if (contains == undefined)
+                    contains = "";
+                //restores
+                this.$data.OnPage = page;
+                this.$data.SearchString = contains;
+                this.$data.SelectedFilterValue = type;
+                this.LoadDealers(this.GetCurrentDealerListingApi);
+            },
+            //load contracts on startup
+            //loading animation?
+            LoadDealers: function (url) {
+                var that = this;
+                //that.$data.IsLoading = true; //way too fast to show loading animation, causes jerking in UI
+                //console.log(url);
+                axios.get(url)
+                    .then(function (response) {
+                        that.$data.DealerViewerModel = response.data;
+                        that.$data.DealerModels = response.data.DealerModels;
+                        that.$data.DocumentNames = response.data.DocumentNames;
+                        that.UpdatePagination();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        console.log("Failed to fetch model"); //display this somehow...
+                    });
+            },
+
+            //update paging
+            UpdatePagination: function () {
+                this.$data.TotalPages = this.$data.DealerViewerModel.TotalPages;
+                this.$data.TotalRows = this.$data.DealerViewerModel.TotalRows;
+            },
+
+            //add new row btn clicked
+            AddNewDealerClicked: function () {
+                this.$data.ShowAddDealerModal = true;
+            },
+            //open new tab show scan
+            OpenNewScanPage: function (id) {
+                var url = CurrentHost + GetScanPdfApiUrl.replace("{id}", id);
+                //console.log(url);
+                window.open(url);
+            },
+
+            ShowUploadModalHandler: function (id) {
+                this.$data.ShowUploadModal = true;
+                this.$data.UploadToDealerId = id;
+            },
+
+            PrinDocumentModalHandler: function (id) {
+                this.$data.ShowDocumentModal = true;
+                this.$data.ShowDocumentForId = id;
+            },
+
+            OnCloseUploadModal: function () {
+                this.$data.ShowUploadModal = false;
+                this.LoadDealers(this.GetCurrentDealerListingApi);
+            },
+
+            SearchButtonClicked: function (searchModel) {
+                //back to page 1 on search
+                this.$data.SelectedFilterValue = searchModel.SelectedFilterValue;
+                this.$data.SearchString = searchModel.SearchString;
+                this.$data.OnPage = 1;
+                //this will trigger route watch
+                router.push({ name: 'Index', query: this.GetSearchQuery(1) });
+
+            },
+
+            PageNavClicked: function (page) {
+                ////router.push({ path: `${page}/${type}/${contains}` })
+                this.$data.OnPage = page;
+                router.push({ name: 'Index', query: this.GetSearchQuery(page) });
+
+            },
+
+            ToggleOtherDetails: function (dealerId) {
+                var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
+                if (index == -1) {
+                    //details not showing -> push to showing
+                    this.$data.ShowingOtherDetailArray.push(dealerId);
+                    this.HidePosDetails(dealerId);
+                }
+                else {
+                    this.HideOtherDetails(dealerId);
+                }
+
+            },
+            HidePosDetails: function (dealerId) {
+                var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
+                if (index != -1) {
+                    this.$data.ShowingPosDetailArray.splice(index, 1);
+                }
+            },
+            TogglePosDetails: function (dealerId) {
+                var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
+                if (index == -1) {
+                    //shows
+                    this.$data.ShowingPosDetailArray.push(dealerId);
+                    this.HideOtherDetails(dealerId);
+                }
+                else {
+                    //hides
+                    this.HidePosDetails(dealerId);
+                }
+                
+            },
+            HideOtherDetails: function (dealerId) {
+                var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
+                if (index != -1) {
+                    this.$data.ShowingOtherDetailArray.splice(index, 1);
+                }
+            },
+            CollapseAll: function () {
+                while (this.$data.ShowingOtherDetailArray.length > 0) { this.$data.ShowingOtherDetailArray.pop(); }
+                while (this.$data.ShowingPosDetailArray.length > 0) { this.$data.ShowingPosDetailArray.pop(); }
+
+            },
+            IsShowingPosDetails: function (dealerId) {
+                var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
+                return index != -1;
+            },
+
+            IsShowingOtherDetails: function (dealerId) {
+                var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
+                return index != -1;
+                return false;
+            },
+
+            GetSearchQuery: function (pageNumber) {
+                return {
+                    page: pageNumber,
+                    filter: this.HasFilter,
+                    type: this.$data.SelectedFilterValue,
+                    contains: this.$data.SearchString
+                };
+            }
+        }
+    };
+</script>

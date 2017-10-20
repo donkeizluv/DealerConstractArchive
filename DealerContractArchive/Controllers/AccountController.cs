@@ -37,9 +37,10 @@ namespace AuthorizationLab.Controllers
             if (TempData.ContainsKey(LoginStatusKey))
                 ViewBag.LoginStatus = TempData[LoginStatusKey];
             //return login form view
+            ViewBag.NoFooter = true;
             return View();
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> DoLogin([FromForm]string userName = "", [FromForm]string pwd = "")
@@ -89,12 +90,21 @@ namespace AuthorizationLab.Controllers
         }
 
 
-        [DllImport("advapi32.dll")]
-        public static extern bool LogonUser(string userName, string domainName, string password, int LogonType, int LogonProvider, ref IntPtr phToken);
-        private bool ValidateCredentials(string userName, string password)
+        //[DllImport("advapi32.dll")]
+        //public static extern bool LogonUser(string userName, string domainName, string password, int LogonType, int LogonProvider, ref IntPtr phToken);
+        //private bool ValidateCredentials(string userName, string password)
+        //{
+        //    IntPtr tokenHandler = IntPtr.Zero;
+        //    return LogonUser(userName, Domain, password, 3, 0, ref tokenHandler);
+        //}
+
+        private bool ValidateCredentials(string userName, string pwd)
         {
-            IntPtr tokenHandler = IntPtr.Zero;
-            return LogonUser(userName, Domain, password, 3, 0, ref tokenHandler);
+            using (var pc = new System.DirectoryServices.AccountManagement.PrincipalContext(System.DirectoryServices.AccountManagement.ContextType.Domain, "sgvf.sgcf"))
+            {
+                // validate the credentials
+                return pc.ValidateCredentials(userName, pwd);
+            }
         }
         private LoginLevel GetLoginLevel(string userName, string pwd)
         {
@@ -109,7 +119,7 @@ namespace AuthorizationLab.Controllers
                 if (!Enum.IsDefined(typeof(LoginLevel), accountType))
                     return LoginLevel.Error;
                 return (LoginLevel)Enum.Parse(typeof(LoginLevel), accountType);
-            }   
+            }
         }
 
     }

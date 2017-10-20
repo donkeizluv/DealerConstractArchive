@@ -1,72 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using DealerContractArchive.EntityModels;
-using DealerContractArchive.Helper;
-using System.IO;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using System.Net.Http.Headers;
-using System.Text;
-using GemBox.Document;
-using Microsoft.AspNetCore.Authorization;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using Microsoft.AspNetCore.Mvc;
+//using DealerContractArchive.EntityModels;
+//using DealerContractArchive.Helper;
+//using System.IO;
+//using Microsoft.AspNetCore.Mvc.Formatters;
+//using System.Net.Http.Headers;
+//using System.Text;
 //using GemBox.Document;
+//using Microsoft.AspNetCore.Authorization;
+////using GemBox.Document;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+//// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace DealerContractArchive.Controllers
-{
-    [Authorize]
-    public class DocumentController : Controller
-    {
-        private const string GemboxDocumentKey = "DTJX-2LSB-QJV3-R3XP";
+//namespace DealerContractArchive.Controllers
+//{
+//    [Authorize]
+//    public class DocumentController : Controller
+//    {
+//        private const string gemboxdocumentkey = "dtjx-2lsb-qjv3-r3xp";
 
-        [HttpGet]
-        public IActionResult GetDocument([FromQuery] int contractId, [FromQuery] string docName)
-        {
-            using (var context = new DealerContractContext())
-            {
-                var contract = context.Contracts.FirstOrDefault(c => c.ContractId == contractId);
-                if (contract == null) return BadRequest();
+//        [httpget]
+//        public iactionresult getdocument([fromquery] int contractid, [fromquery] string docname)
+//        {
+//            using (var context = new dealercontractcontext())
+//            {
+//                var contract = context.contracts.firstordefault(c => c.contractid == contractid);
+//                if (contract == null) return badrequest();
 
-                var document = context.Documents.FirstOrDefault(c => string.Compare(docName, c.Name, true) == 0);
-                if (document == null) return BadRequest();
-                var docFullPath = EnviromentHelper.GetDocumentFullPath(document.Filename);
+//                var document = context.documents.firstordefault(c => string.compare(docname, c.name, true) == 0);
+//                if (document == null) return badrequest();
+//                var docfullpath = enviromenthelper.getdocumentfullpath(document.filename);
 
-                if (!(new FileInfo(docFullPath)).Exists) return NoContent();
-                string docContent = System.IO.File.ReadAllText(docFullPath);
-                docContent = FillContractDocument(docContent, contract);
-                //return Content(docContent);
-                return Content(docContent, "text/html", Encoding.UTF8);
-            }
-            //return View();
-        }
-        [HttpGet]
-        public IActionResult GetDocumentPdf() //works!
-        {
-            ComponentInfo.SetLicense(GemboxDocumentKey);
-            var doc = new DocumentModel();
-            doc.Sections.Add(new Section(doc, new Paragraph(doc, "Hello!")));
+//                if (!(new fileinfo(docfullpath)).exists) return nocontent();
+//                string doccontent = system.io.file.readalltext(docfullpath);
+//                doccontent = fillcontractdocument(doccontent, contract);
+//                //return content(doccontent);
+//                return content(doccontent, "text/html", encoding.utf8);
+//            }
+//            //return view();
+//        }
+//        [httpget]
+//        public iactionresult getdocumentpdf() //works!
+//        {
+//            componentinfo.setlicense(gemboxdocumentkey);
+//            var doc = new documentmodel();
+//            doc.sections.add(new section(doc, new paragraph(doc, "hello!")));
 
-            var responseStream = new MemoryStream();
-            doc.Save(responseStream, SaveOptions.PdfDefault);
+//            var responsestream = new memorystream();
+//            doc.save(responsestream, saveoptions.pdfdefault);
 
-            //to return file use File()
-            var response = File(responseStream, "application/pdf");
-            return response;
-        }
+//            //to return file use file()
+//            var response = file(responsestream, "application/pdf");
+//            return response;
+//        }
 
-        //Name: @name
-        //Address: @address
-        //Tax Id: @taxid
+//        //name: @name
+//        //address: @address
+//        //tax id: @taxid
 
-        private string FillContractDocument(string documentContent, Contracts contract)
-        {
-            var content = documentContent.Replace("@name", contract.Name);
-            content = content.Replace("@address", contract.Address);
-            content = content.Replace("@taxid", contract.TaxId);
-            return content;
-        }
-    }
-}
+//        private string fillcontractdocument(string documentcontent, contracts contract)
+//        {
+//            var content = documentcontent.replace("@name", contract.name);
+//            content = content.replace("@address", contract.address);
+//            content = content.replace("@taxid", contract.taxid);
+//            return content;
+//        }
+//    }
+//}
