@@ -1,6 +1,13 @@
 ﻿body {
     padding-top: 40px;
 }
+.table-cell-content{
+    font-size: small;
+    font-weight: 500;
+}
+.no-wrap-text{
+    text-wrap: none;
+}
 .left-buffer{
     margin-left: 50px;
 }

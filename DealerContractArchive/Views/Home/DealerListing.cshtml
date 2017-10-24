@@ -31,15 +31,15 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <td><button class="btn btn-link"  v-on:click="CollapseAll"><span class="glyphicon glyphicon-minus"></span> All</button></td>
-                    <td><h5>Group</h5></td>
-                    <td><h5>Name</h5></td>
-                    <td><h5>Resigtered Name</h5></td>
-                    <td><h5>Tax Id</h5></td>
-                    <td><h5>Effective</h5></td>
-                    <td><h5>Phone</h5></td>
-                    <td><h5>Username</h5></td>
-                    <td><h5>More</h5></td>
+                    <td><button class="btn btn-link btn-group-sm"  v-on:click="CollapseAll"><span class="glyphicon glyphicon-minus"></span> All</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('GroupName')"><span v-html="DisplayOrderButtonStates('GroupName')"></span>Group</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('DealerName')"><span v-html="DisplayOrderButtonStates('DealerName')"></span>Dealer Name</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('ResigteredName')"><span v-html="DisplayOrderButtonStates('ResigteredName')"></span>Resigtered Name</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('TaxId')"><span v-html="DisplayOrderButtonStates('TaxId')"></span>Tax Id</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('Effective')"><span v-html="DisplayOrderButtonStates('Effective')"></span>Effective</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('Phone')"><span v-html="DisplayOrderButtonStates('Phone')"></span>Phone</button></td>
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('Username')"><span v-html="DisplayOrderButtonStates('Username')"></span>Username</button></td>
+                    <td></td>
                     <td>
                         <button v-show="!readonly" v-on:click="AddNewDealerClicked" class="btn btn-sm">
                             <span class="glyphicon glyphicon-plus"></span> 
@@ -55,13 +55,13 @@
                                 </span>
                             </button>
                         </td>
-                        <td>{{dealer.GroupName}}</td>
-                        <td>{{dealer.DealerName}}</td>
-                        <td>{{dealer.RegisteredName}}</td>
-                        <td>{{dealer.TaxId}}</td>
-                        <td>{{dealer.EffectiveDayRemain}}</td>
-                        <td>{{dealer.Phone}}</td>
-                        <td>{{dealer.Username}}</td>
+                        <td nowrap><span class="table-cell-content">{{dealer.GroupName}}</span></td>
+                        <td><span class="table-cell-content">{{dealer.DealerName}}</span></td>
+                        <td><span class="table-cell-content">{{dealer.RegisteredName}}</span></td>
+                        <td nowrap><span class="table-cell-content">{{dealer.TaxId}}</span></td>
+                        <td><span class="table-cell-content">{{dealer.Effective}}</span></td>
+                        <td nowrap><span class="table-cell-content">{{dealer.Phone}}</span></td>
+                        <td nowrap><span class="table-cell-content">{{dealer.Username}}</span></td>
                         <td><button class="btn-link" v-on:click="ToggleOtherDetails(dealer.DealerId)">&hellip;</button></td>
                         <td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>
                     </tr>
@@ -69,7 +69,7 @@
                     <tr>
                         @*any better ways to do this?*@
                         <other-details v-bind:dealer="dealer" v-show="IsShowingOtherDetails(dealer.DealerId)"></other-details>
-                        <pos-details v-bind:pos="dealer.Pos" v-show="IsShowingPosDetails(dealer.DealerId)"></pos-details>
+                        <pos-details v-bind:pos="dealer.Pos" v-bind:readonly=readonly v-show="IsShowingPosDetails(dealer.DealerId)"></pos-details>
                     </tr>
 
                 </template>
@@ -128,6 +128,10 @@
                 SearchString: "",
                 SelectedFilterValue: 2,
 
+                //sorting
+                OrderBy: "GroupName",
+                OrderAsc: true,
+
                 //listing, nav
                 DealerViewerModel: [],
                 DealerModels: [],
@@ -168,6 +172,9 @@
                 api = api.replace("{filter}", this.HasFilter);
                 api = api.replace("{type}", this.$data.SelectedFilterValue);
                 api = api.replace("{contains}", this.$data.SearchString);
+                api = api.replace("{orderBy}", this.$data.OrderBy);
+                api = api.replace("{asc}", this.$data.OrderAsc);
+                console.log(api);
                 return CurrentHost + api;
             }
         },
@@ -179,6 +186,9 @@
                 this.$data.SearchString = to.query.contains;
                 this.$data.SelectedFilterValue = to.query.type;
                 this.$data.OnPage = to.query.page;
+                this.$data.OrderBy = to.query.orderby;
+                this.$data.OrderAsc = to.query.asc;
+
                 this.LoadDealers(this.GetCurrentDealerListingApi);
             }
         },
@@ -188,17 +198,25 @@
                 //restore page on pasted link
                 //var page = router.history.current.params.page;
                 var page = router.history.current.query.page;
-                if (page < 1 || page == null) page = 1;
+                if (page < 1 || page == null || page == undefined) page = 1;
                 var type = router.history.current.query.type;
-                if (type == undefined)
-                    type = 2; //default select filter: Name
+                type = type == undefined ? 2 : type;
                 var contains = router.history.current.query.contains;
-                if (contains == undefined)
-                    contains = "";
+                contains = contains == undefined ? "" : contains;
+                //sort
+                var orderBy = router.history.current.query.orderBy;
+                orderBy = orderBy == undefined ? "GroupName" : orderBy;
+                var orderAsc = router.history.current.query.asc;
+                orderAsc = orderAsc == undefined ? true : orderAsc;
+
+
                 //restores
                 this.$data.OnPage = page;
                 this.$data.SearchString = contains;
                 this.$data.SelectedFilterValue = type;
+                this.$data.OrderBy = orderBy;
+                this.$data.OrderAsc = orderAsc;
+
                 this.LoadDealers(this.GetCurrentDealerListingApi);
             },
             //load contracts on startup
@@ -269,6 +287,31 @@
 
             },
 
+            OrderByClicked: function (orderBy) {
+                //if already ordery by this -> change Asc
+                if (this.$data.OrderBy == orderBy) {
+                    this.$data.OrderAsc = !this.$data.OrderAsc;
+                }
+                else {
+                    //reset Asc
+                    this.$data.OrderBy = orderBy;
+                    this.$data.OrderAsc = true;
+                }
+                router.push({ name: 'Index', query: this.GetSearchQuery(1) });
+            },
+
+            DisplayOrderButtonStates: function (orderBy) {
+                console.log(orderBy);
+                if (orderBy == this.$data.OrderBy) {
+                    if(this.$data.OrderAsc)
+                        return "&dtrif;";
+                    return "&utrif;";
+                }
+                return "";
+
+            },
+
+            //details
             ToggleOtherDetails: function (dealerId) {
                 var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
                 if (index == -1) {
@@ -327,7 +370,9 @@
                     page: pageNumber,
                     filter: this.HasFilter,
                     type: this.$data.SelectedFilterValue,
-                    contains: this.$data.SearchString
+                    contains: this.$data.SearchString,
+                    orderby: this.$data.OrderBy,
+                    asc: this.$data.OrderAsc
                 };
             }
         }

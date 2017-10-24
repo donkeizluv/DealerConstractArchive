@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EntityModels\" />
     <Folder Include="Helper\" />
   </ItemGroup>
 

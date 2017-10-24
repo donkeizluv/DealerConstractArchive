@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace DealerContractArchive
 {
@@ -46,7 +47,10 @@ namespace DealerContractArchive
             //https://github.com/aspnet/Mvc/issues/4842
             services.AddMvc().AddJsonOptions(options =>
             {
+                //solve auto camel case prop names
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                //ignore loop ref of object contains each other
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
         }
 

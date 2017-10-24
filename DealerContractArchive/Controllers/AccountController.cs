@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -89,7 +88,7 @@ namespace AuthorizationLab.Controllers
             return View();
         }
 
-
+        //not proper
         //[DllImport("advapi32.dll")]
         //public static extern bool LogonUser(string userName, string domainName, string password, int LogonType, int LogonProvider, ref IntPtr phToken);
         //private bool ValidateCredentials(string userName, string password)
@@ -100,7 +99,7 @@ namespace AuthorizationLab.Controllers
 
         private bool ValidateCredentials(string userName, string pwd)
         {
-            using (var pc = new System.DirectoryServices.AccountManagement.PrincipalContext(System.DirectoryServices.AccountManagement.ContextType.Domain, "sgvf.sgcf"))
+            using (var pc = new System.DirectoryServices.AccountManagement.PrincipalContext(System.DirectoryServices.AccountManagement.ContextType.Domain, Domain))
             {
                 // validate the credentials
                 return pc.ValidateCredentials(userName, pwd);

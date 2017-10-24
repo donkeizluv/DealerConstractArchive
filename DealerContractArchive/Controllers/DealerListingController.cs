@@ -5,50 +5,42 @@ using Microsoft.AspNetCore.Mvc;
 using DealContractArchiver.ViewModels;
 using DealerContractArchive.EntityModels;
 using DealContractArchiver.ViewModels.Helper;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using DealerContractArchive.Helper;
 using Microsoft.AspNetCore.Authorization;
-using DealerContractArchive.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DealerContractArchive.Views
 {
-    //2 choices:
-    //route defined in each controler or
-    //global route in startup
     [Route("API/ContractListing/[action]")]
     [Authorize]
     public class DealerListingController : Controller
     {
         [HttpGet]
-        public DealerListingViewModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "")
+        public DealerListingViewModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "", [FromQuery] string orderBy = "", [FromQuery] bool asc = true)
         {
             var model = new DealerListingViewModel();
             //set model state
-            var filterColumnName = FilterColumn.None;
-            if (Enum.IsDefined(typeof(FilterColumn), type))
-            {
-                filterColumnName = (FilterColumn)type;
-            }
+            var filterColumnName = FilterColumnTranslater(type);
             model.FilterType = filterColumnName.ToString();
             model.IsFilterApplied = filter;
             model.FilterString = contains;
             model.DocumentNames = GetDocumentNames();
             int totalRows;
-            if (filter && !string.IsNullOrEmpty(contains))
+            if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
             {
-                //model.ContractModels = GetFilteredConstractsQuery(filterColumnName, contains, page, out totalRows);
-                model.DealerModels = GetDealers(out totalRows, page);
+                model.DealerModels = GetFilteredDealers(filterColumnName, contains, page, orderBy, asc, out totalRows);
             }
             else
             {
-                model.DealerModels = GetDealers(out totalRows, page);
+                model.DealerModels = GetDealers(out totalRows, page, orderBy, asc);
             }
             model.UpdatePagination(totalRows);
+
+            //model.DealerModels.ForEach(dealer => dealer.Pos = GetPos(dealer.DealerId));
             return model;
         }
 
@@ -149,121 +141,83 @@ namespace DealerContractArchive.Views
             }
             return true;
         }
+        private static string FilterColumnTranslater(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "GroupName";
+                case 2:
+                    return "DealerName";
+                case 3:
+                    return "TaxId";
+                case 4:
+                    return "Username";
+                default:
+                    return string.Empty;
+            }
 
-//        private List<DealerViewModel> GetFilteredConstractsQuery(FilterColumn filterCol, string filterString, int page, out int totalRows)
-//        {
-//            var list = new List<DealerViewModel>();
-//            using (var context = new DealerContractContext())
-//            {
-//                int excludedRows = (page - 1) * DealerListingViewModel.ItemPerPage;
-//                string processedFilterString = filterString;
-//                if (filterCol == FilterColumn.Added) //convert username to int first
-//                {
-//                    var user = context.Users.Where(u => u.Username == filterString);
-//                    if (user == null || user.Count() < 1)
-//                        processedFilterString = "-1";
-//                    else
-//                        processedFilterString = user.First().UserId.ToString();
-//                }
-//                var query = context.Contracts
-//                    .OrderBy(c => c.ContractId)
-//                    .Where(ExpressionHelper.GetContainsExpression<Contracts>(filterCol.ToString(), processedFilterString));
-//                totalRows = query.Count();
-//                query = query.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage);
-//                if (query.Any())
-//                {
-//                    list = (from c in query
-//                            select new DealerViewModel()
-//                            {
-//                                ContractId = c.ContractId,
-//                                Name = c.Name,
-//                                Address = c.Address,
-//                                Commission = c.Commission,
-//                                Effective = c.Effective,
-//                                Phone = c.Phone,
-//                                ScannedContractUrl = c.ScannedContractUrl,
-//                                TaxId = c.TaxId,
-//                                UserId = c.UserId,
-//                                Username = c.User.Username
-//                            }).ToList();
+        }
+        //wow!
+        //https://stackoverflow.com/questions/2728340/how-can-i-do-an-orderby-with-a-dynamic-string-parameter
+        private static Func<Dealer, object> OrderTranslater(string orderBy)
+        {
+            switch (orderBy)
+            {
+                case "GroupName":
+                    return i => i.GroupName;
+                case "DealerName":
+                    return i => i.DealerName;
+                case "ResigteredName":
+                    return i => i.RegisteredName;
+                case "TaxId":
+                    return i => i.TaxId;
+                case "Effective":
+                    return i => i.Effective;
+                case "Phone":
+                    return i => i.Phone;
+                case "Username":
+                    return i => i.Username;
+                default:
+                    return i => i.GroupName;
+            }
+        }
 
-//                }
-//#if DEBUG
-//                Debug.Print($"filterd list count: {list.Count}");
-//#endif
+        private List<Dealer> GetFilteredDealers(string columnName, string filterString, int page, string orderBy, bool asc, out int totalRows)
+        {
+            using (var context = new DealerContractContext())
+            {
+                int excludedRows = (page - 1) * DealerListingViewModel.ItemPerPage;
+                var query = context.Dealer.Include(d => d.Pos)
+                    .Where(ExpressionHelper.GetContainsExpression<Dealer>(columnName, filterString));
+                totalRows = query.Count();
+                var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
+                //set total rows
+                return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
+            }
+        }
 
-//                return list;
-//            }
-//        }
-        
-        private List<DealerViewModel> GetDealers(out int totalRows, int pageNum = 1)
+        private List<Dealer> GetDealers(out int totalRows, int pageNum, string orderBy, bool asc)
         {
             int getPage = pageNum < 1 ? 1 : pageNum;
             using (var context = new DealerContractContext())
             {
-                totalRows = context.Dealer.Count();
                 int excludedRows = (getPage - 1) * DealerListingViewModel.ItemPerPage;
-                var query = context.Dealer
-                    .OrderBy(c => c.GroupName)
-                    .Skip(excludedRows)
-                    .Take(DealerListingViewModel.ItemPerPage)
-                    .AsQueryable();
-                //copy to model
-                //for some fucking reason, direct entity to json is a paint in the ass :/
-                var list = (from c in query
-                            select new DealerViewModel()
-                            {
-                                DealerId = c.DealerId,
-                                GroupName = c.GroupName,
-                                BussinessId = c.BussinessId,
-                                DealerName = c.DealerName,
-                                RegisteredName = c.RegisteredName,
-                                Delegate = c.Delegate,
-                                SubDelegate = c.SubDelegate,
-                                StartEffective = c.StartEffective,
-                                EndEffective = c.EndEffective,
-                                Fax = c.Fax,
-                                Gender = c.Gender,
-                                Hqaddress = c.Hqaddress,
-                                Owner = c.Owner,
-                                Phone = c.Phone,
-                                Position = c.Position,
-                                Representative = c.Representative,
-                                TaxId = c.TaxId,
-                                Username = c.Username,
-                                Pos = GetPos(c.DealerId)
-                            }).ToList();
-                if (list.Any())
-                {
-                    return list;
-                }
-                return null;
+                var query = context.Dealer.Include(d => d.Pos);
+                totalRows = query.Count();
+                var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
+                return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
             }
         }
-        private List<PosViewModel> GetPos(int dealerId)
+
+        private List<Pos> GetPos(int dealerId)
         {
             using (var context = new DealerContractContext())
             {
                 //populate pos list
                 var dealer = context.Dealer.Include(d => d.Pos).FirstOrDefault(d => d.DealerId == dealerId);
-                //var dealer = context.Dealer.FirstOrDefault(d => d.DealerId == dealerId);
-                var posList = from p in dealer.Pos
-                              select new PosViewModel()
-                              {
-                                  Address = p.Address,
-                                  Batch = p.Batch,
-                                  Bl = p.Bl,
-                                  Brand = p.Brand,
-                                  DealerId = p.DealerId,
-                                  PosCode = p.PosCode,
-                                  PosId = p.PosId,
-                                  PosName = p.PosName,
-                                  Province = p.Province,
-                                  Region = p.Region,
-                                  Status = p.Status,
-                                  Username = p.Username
-                              };
-                return posList.ToList();
+                //var dealer = context.Dealer.FirstOrDefault(d => d.DealerId == dealerId)
+                return dealer.Pos.ToList();
             }
         }
     }

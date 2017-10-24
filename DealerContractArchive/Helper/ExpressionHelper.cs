@@ -6,30 +6,11 @@ namespace DealContractArchiver.ViewModels.Helper
 {
     public static class ExpressionHelper
     {
-        private static string EnumToDbColumnNameTranslater(string name)
-        {
-            switch (name)
-            {
-                case "Name":
-                    return name;
-                case "Phone":
-                    return name;
-                case "Address":
-                    return name;
-                case "TaxId":
-                    return name;
-                case "Index":
-                    return "ContractId";
-                case "Added":
-                    return "UserId";
-                default:
-                    return "Name";
-            }
-        }
+      
         public static Expression<Func<T, bool>> GetContainsExpression<T>(string propertyName, string containsValue)
         {
             var parameterExp = Expression.Parameter(typeof(T), "type");
-            var propertyExp = Expression.Property(parameterExp, EnumToDbColumnNameTranslater(propertyName));
+            var propertyExp = Expression.Property(parameterExp, propertyName);
             MethodInfo method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
             if (propertyExp.Type == typeof(Int32)) //incase column is not string
             {

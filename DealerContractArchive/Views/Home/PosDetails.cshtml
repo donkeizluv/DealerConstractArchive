@@ -24,16 +24,16 @@
                             </tr>
                         </thead>
                         <tr v-for="oPos in pos">
-                            <td> {{oPos.PosCode}}</td>
-                            <td>{{oPos.PosName}}</td>
-                            <td>{{oPos.Batch}}</td>
-                            <td>{{oPos.Address}}</td>
-                            <td>{{oPos.Region}}</td>
-                            <td>{{oPos.Province}}</td>
-                            <td>{{oPos.Brand}}</td>
-                            <td>{{oPos.Bl}}</td>
-                            <td>{{oPos.Status}}</td>
-                            <td>{{oPos.Username}}</td>
+                            <td nowrap><span class="table-cell-content">{{oPos.PosCode}}</span></td>
+                            <td><span class="table-cell-content">{{oPos.PosName}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Batch}}</span></td>
+                            <td><span class="table-cell-content">{{oPos.Address}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Region}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Province}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Brand}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Bl}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Status}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{oPos.Username}}</span></td>
                             <td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>
                         </tr>
                     </table>
@@ -46,6 +46,6 @@
     var PosDetails = {
         name: 'pos-details',
         template: '#pos-details-template',
-        props: ['pos']
+        props: ['pos', 'readonly']
     }
 </script>

@@ -1,21 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using DealerContractArchive.EntityModels;
+using System.Collections.Generic;
 
 namespace DealContractArchiver.ViewModels
 {
-    public enum FilterColumn
-    {
-        None = 0,
-        Index = 1,
-        Name = 2,
-        Phone = 3,
-        Address = 4,
-        TaxId = 5,
-        Added = 6
-    }
     public class DealerListingViewModel
     {
-        //NYI: sort
-        public List<DealerViewModel> DealerModels { get; set; }
+        public List<Dealer> DealerModels { get; set; }
         public List<string> DocumentNames { get; set; }
         public bool IsFilterApplied { get; set; }
         public string FilterType { get; set; }
@@ -28,7 +18,7 @@ namespace DealContractArchiver.ViewModels
 
         public DealerListingViewModel()
         {
-            DealerModels = new List<DealerViewModel>();
+            DealerModels = new List<Dealer>();
             IsFilterApplied = false;
             FilterString = string.Empty;
         }
