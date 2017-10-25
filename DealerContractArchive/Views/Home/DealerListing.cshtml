@@ -4,25 +4,25 @@
 @Html.Partial("SearchBar")
 @Html.Partial("OtherDetails")
 @Html.Partial("PosDetails")
+@Html.Partial("DocumentDetails")
 
 @*@Html.Partial("PageNav")*@
 
 <template id="dealer-listing-template">
     <div>
         <!--pops up modal-->
-        @*<printdocument-modal v-if="ShowDocumentModal"
-                                 v-on:close="ShowDocumentModal = false"
-                                 v-bind:docnames="DocumentNames"
-                                 v-bind:contractid="ShowDocumentForId">
-            </printdocument-modal>
-            <newcontract-modal v-if="ShowAddContractModal"
-                               v-on:close="ShowAddContractModal = false">
-            </newcontract-modal>
-            <upload-modal v-if="ShowUploadModal"
-                          v-on:close="OnCloseUploadModal"
-                          v-bind:contractid="UploadToContractId">
-            </upload-modal>*@
-        <!--search bar-->
+        <printdocument-modal v-if="ShowDocumentModal"
+                            v-on:close="ShowDocumentModal = false"
+                            v-bind:docnames="DocumentNames"
+                            v-bind:contractid="ShowDocumentForId">
+        </printdocument-modal>
+        @*<newcontract-modal v-if="ShowAddContractModal"
+                            v-on:close="ShowAddContractModal = false">
+        </newcontract-modal>*@
+        <upload-modal v-if="ShowUploadModal"
+                        v-on:close="OnCloseUploadModal"
+                        v-bind:dealerid="UploadToDealerId">
+        </upload-modal>
         @*make this a component*@
         <div class="row">
             @*search component*@
@@ -34,12 +34,13 @@
                     <td><button class="btn btn-link btn-group-sm"  v-on:click="CollapseAll"><span class="glyphicon glyphicon-minus"></span> All</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('GroupName')"><span v-html="DisplayOrderButtonStates('GroupName')"></span>Group</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('DealerName')"><span v-html="DisplayOrderButtonStates('DealerName')"></span>Dealer Name</button></td>
-                    @*<td><button class="btn btn-link" v-on:click="OrderByClicked('ResigteredName')"><span v-html="DisplayOrderButtonStates('ResigteredName')"></span>Resigtered Name</button></td>*@
+                    <td><button class="btn btn-link" v-on:click="OrderByClicked('ContractNo')"><span v-html="DisplayOrderButtonStates('ContractNo')"></span>Contract No</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('TaxId')"><span v-html="DisplayOrderButtonStates('TaxId')"></span>Tax Id</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('Effective')"><span v-html="DisplayOrderButtonStates('Effective')"></span>Effective</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('Phone')"><span v-html="DisplayOrderButtonStates('Phone')"></span>Phone</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('Username')"><span v-html="DisplayOrderButtonStates('Username')"></span>Username</button></td>
-                    <td></td>
+                    <td><h5>Document</h5></td>
+                    <td><h5>Other</h5></td>
                     <td>
                         <button v-show="!readonly" v-on:click="AddNewDealerClicked" class="btn btn-sm">
                             <span class="glyphicon glyphicon-plus"></span> 
@@ -57,21 +58,28 @@
                         </td>
                         <td nowrap><span class="table-cell-content">{{dealer.GroupName}}</span></td>
                         <td><span class="table-cell-content">{{dealer.DealerName}}</span></td>
-                        @*<td><span class="table-cell-content">{{dealer.RegisteredName}}</span></td>*@
+                        <td><span class="table-cell-content">{{dealer.ContractNo}}</span></td>
                         <td nowrap><span class="table-cell-content">{{dealer.TaxId}}</span></td>
                         <td><span class="table-cell-content">{{dealer.Effective}}</span></td>
                         <td nowrap><span class="table-cell-content">{{dealer.Phone}}</span></td>
                         <td nowrap><span class="table-cell-content">{{dealer.Username}}</span></td>
+                        <td><button class="btn-link" v-on:click="ToggleDocDetails(dealer.DealerId)"><span class="glyphicon glyphicon-list"></span></button></td>
                         <td><button class="btn-link" v-on:click="ToggleOtherDetails(dealer.DealerId)">&hellip;</button></td>
                         <td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>
                     </tr>
                     @*expandable details*@
                     <tr>
-                        @*any better ways to do this?*@
                         <other-details v-bind:dealer="dealer" v-show="IsShowingOtherDetails(dealer.DealerId)"></other-details>
                         <pos-details v-bind:pos="dealer.Pos" v-bind:readonly=readonly v-show="IsShowingPosDetails(dealer.DealerId)"></pos-details>
+                        <doc-details v-on:displayscannclicked="OpenNewScanPage"
+                                        v-on:showuploadmodalclicked="ShowUploadModalHandler"
+                                        v-bind:documentnames="DocumentNames"
+                                        v-bind:uploaded="dealer.Scan"
+                                        v-bind:dealerid="dealer.DealerId"
+                                        v-show="IsShowingDocDetails(dealer.DealerId)"
+                                        v-bind:readonly=readonly></doc-details>
+                        @*any better ways to do this?*@
                     </tr>
-
                 </template>
             </tbody>
         </table>
@@ -116,7 +124,8 @@
             'upload-modal': UploadModal,
             'printdocument-modal': PrintDocumentModal,
             'other-details': OtherDetails,
-            'pos-details': PosDetails
+            'pos-details': PosDetails,
+            'doc-details': DocumentDetails
         },
         props: ['readonly'],
         data: function () {
@@ -132,7 +141,7 @@
                 //sorting
                 OrderBy: "GroupName",
                 OrderAsc: true,
-                Loading: false, //kinda like loading, prevent clicking
+                Loading: false, //prevent clicking while loading new content
 
                 //listing, nav
                 DealerViewerModel: [],
@@ -145,6 +154,7 @@
                 //details section
                 ShowingPosDetailArray: [],
                 ShowingOtherDetailArray: [],
+                ShowingDocDetailArray: [],
 
                 //modals
                 ShowAddDealerModal: false,
@@ -254,6 +264,8 @@
             },
             //open new tab show scan
             OpenNewScanPage: function (id) {
+                console.log("wtf?");
+                console.log(id);
                 var url = CurrentHost + GetScanPdfApiUrl.replace("{id}", id);
                 //console.log(url);
                 window.open(url);
@@ -315,50 +327,78 @@
                 return "";
 
             },
+            //doc details
+            ToggleDocDetails: function (dealerId) {
+                var index = this.$data.ShowingDocDetailArray.indexOf(dealerId);
+                if (index == -1) {
+                    //details not showing -> push to showing
+                    this.HideDetails(dealerId);
+                    this.$data.ShowingDocDetailArray.push(dealerId);
+                }
+                else {
+                    this.HideDetails(dealerId);
+                }
 
+            },
             //details
             ToggleOtherDetails: function (dealerId) {
                 var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
                 if (index == -1) {
                     //details not showing -> push to showing
+                    this.HideDetails(dealerId);
                     this.$data.ShowingOtherDetailArray.push(dealerId);
-                    this.HidePosDetails(dealerId);
                 }
                 else {
-                    this.HideOtherDetails(dealerId);
+                    this.HideDetails(dealerId);
                 }
 
             },
-            HidePosDetails: function (dealerId) {
-                var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
-                if (index != -1) {
-                    this.$data.ShowingPosDetailArray.splice(index, 1);
-                }
-            },
+
             TogglePosDetails: function (dealerId) {
                 var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
                 if (index == -1) {
                     //shows
+                    this.HideDetails(dealerId);
                     this.$data.ShowingPosDetailArray.push(dealerId);
-                    this.HideOtherDetails(dealerId);
                 }
                 else {
                     //hides
-                    this.HidePosDetails(dealerId);
+                    this.HideDetails(dealerId);
                 }
                 
             },
-            HideOtherDetails: function (dealerId) {
+
+            HideDetails: function (dealerId) {
+                //hide other
                 var index = this.$data.ShowingOtherDetailArray.indexOf(dealerId);
                 if (index != -1) {
                     this.$data.ShowingOtherDetailArray.splice(index, 1);
                 }
+                //hide pos
+                index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
+                if (index != -1) {
+                    this.$data.ShowingPosDetailArray.splice(index, 1);
+                }
+                //hide doc
+                index = this.$data.ShowingDocDetailArray.indexOf(dealerId);
+                if (index != -1) {
+                    this.$data.ShowingDocDetailArray.splice(index, 1);
+                }
+
             },
+
             CollapseAll: function () {
                 while (this.$data.ShowingOtherDetailArray.length > 0) { this.$data.ShowingOtherDetailArray.pop(); }
                 while (this.$data.ShowingPosDetailArray.length > 0) { this.$data.ShowingPosDetailArray.pop(); }
+                while (this.$data.ShowingDocDetailArray.length > 0) { this.$data.ShowingDocDetailArray.pop(); }
 
             },
+
+            IsShowingDocDetails: function (dealerId) {
+                var index = this.$data.ShowingDocDetailArray.indexOf(dealerId);
+                return index != -1;
+            },
+
             IsShowingPosDetails: function (dealerId) {
                 var index = this.$data.ShowingPosDetailArray.indexOf(dealerId);
                 return index != -1;

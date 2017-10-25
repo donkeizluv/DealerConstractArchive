@@ -18,13 +18,7 @@ namespace DealerContractArchive.EntityModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"data source=(localdb)\local;initial catalog=DealerContract;Integrated Security=true;");
-                //optionsbuilder.usesqlserver(@"data source=prd-vn-hdesk01\sqlexpress;
-                //    initial catalog=dealercontract;
-                //    persist security info=true;
-                //    user id=sa_dev;password=760119;
-                //    multipleactiveresultsets=true;
-                //    app=entityframework");
+                optionsBuilder.UseSqlServer(@"Server=(LocalDb)\local;Database=DealerContract;Trusted_Connection=True;");
             }
         }
 
@@ -46,19 +40,36 @@ namespace DealerContractArchive.EntityModels
 
             modelBuilder.Entity<Dealer>(entity =>
             {
+                entity.HasIndex(e => e.DealerId)
+                    .HasName("IX_DealerId")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.DealerName)
+                    .HasName("IX_DealerName");
+
+                entity.HasIndex(e => e.TaxId)
+                    .HasName("IX_DealerTaxId");
+
                 entity.Property(e => e.BussinessId)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ContractNo)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.DealerName)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Delegate).HasMaxLength(50);
 
                 entity.Property(e => e.EndEffective).HasColumnType("date");
 
-                entity.Property(e => e.Fax).HasColumnType("nchar(20)");
+                entity.Property(e => e.Fax)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.GroupName)
                     .IsRequired()
@@ -67,15 +78,14 @@ namespace DealerContractArchive.EntityModels
                 entity.Property(e => e.Hqaddress)
                     .IsRequired()
                     .HasColumnName("HQAddress")
-                    .HasMaxLength(50);
+                    .HasMaxLength(100);
 
-                entity.Property(e => e.Owner)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.Owner).HasMaxLength(50);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Position)
                     .IsRequired()
@@ -83,11 +93,13 @@ namespace DealerContractArchive.EntityModels
 
                 entity.Property(e => e.RegisteredName)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Representative)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.SignDate).HasColumnType("date");
 
                 entity.Property(e => e.StartEffective).HasColumnType("date");
 
@@ -95,11 +107,12 @@ namespace DealerContractArchive.EntityModels
 
                 entity.Property(e => e.TaxId)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasColumnType("nchar(50)");
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.GroupNameNavigation)
                     .WithMany(p => p.Dealer)
@@ -117,6 +130,10 @@ namespace DealerContractArchive.EntityModels
             modelBuilder.Entity<DealerGroup>(entity =>
             {
                 entity.HasKey(e => e.GroupName);
+
+                entity.HasIndex(e => e.GroupName)
+                    .HasName("IX_DealerGroup")
+                    .IsUnique();
 
                 entity.Property(e => e.GroupName)
                     .HasMaxLength(50)
@@ -145,31 +162,39 @@ namespace DealerContractArchive.EntityModels
                 entity.Property(e => e.Bl)
                     .IsRequired()
                     .HasColumnName("BL")
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Brand).HasColumnType("nchar(20)");
+                entity.Property(e => e.Brand)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.PosCode).HasColumnType("nchar(20)");
+                entity.Property(e => e.PosCode)
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.PosName)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Province)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Region)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Status)
                     .IsRequired()
-                    .HasColumnType("nchar(20)");
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasColumnType("nchar(50)");
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.Dealer)
                     .WithMany(p => p.Pos)
@@ -187,14 +212,13 @@ namespace DealerContractArchive.EntityModels
             modelBuilder.Entity<Scan>(entity =>
             {
                 entity.Property(e => e.FilePath)
-                    .IsRequired()
                     .HasMaxLength(200);
 
                 entity.Property(e => e.UploadDate).HasColumnType("date");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
-                    .HasColumnType("nchar(50)");
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.Dealer)
                     .WithMany(p => p.Scan)
@@ -214,7 +238,7 @@ namespace DealerContractArchive.EntityModels
                 entity.HasKey(e => e.Username);
 
                 entity.Property(e => e.Username)
-                    .HasColumnType("nchar(50)")
+                    .HasMaxLength(50)
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Description)

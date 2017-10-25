@@ -69,13 +69,13 @@
                 };
             }
         },
-        props: ['contractid'],
+        props: ['dealerid'],
         data: function () {
             return {
                 options: {
                     method: 'post',
                     uploadMultiple: false,
-                    url: UploadContractApiUrl.replace("{id}", this.contractid),
+                    url: UploadContractApiUrl.replace("{id}", this.dealerid),
                     maxFilesize: 5,
                     maxFiles: 1,
                     acceptedFiles: "application/pdf"

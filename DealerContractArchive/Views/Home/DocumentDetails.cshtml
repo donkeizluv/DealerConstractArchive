@@ -1,0 +1,49 @@
+﻿<template id="document-details-template">
+    <td colspan="9999">
+        <div class="left-buffer top-buffer bottom-buffer">
+            <div class="block-update-card">
+                <div class="update-card-body">
+                    <div class="pull-right right-buffer">
+                        <button v-show="!readonly" class="btn btn-sm">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+                        <button v-show="!readonly" class="btn btn-sm" v-on:click="$emit('showuploadmodalclicked', dealerid)">
+                            <span class="glyphicon glyphicon-upload"></span>
+                        </button>
+                    </div>
+                    <table class="table table-condensed">
+                        <thead class="">
+                            <tr>
+                                <td><h5>View</h5></td>
+                                <td><h5>Filename</h5></td>
+                                <td><h5>Upload Date</h5></td>
+                                <td><h5>Username</h5></td>
+
+                            </tr>
+                        </thead>
+                        <tr v-for="upload in uploaded">
+                            <td nowrap>
+                                <span class="table-cell-content">
+                                    <button v-show="upload.FilePath != null" v-on:click="$emit('displayscannclicked', upload.ScanId)" class="btn-link">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </button>
+                                </span>
+                            </td>
+                            <td><span class="table-cell-content">{{upload.FilePath}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{upload.UploadDateShortDate}}</span></td>
+                            <td nowrap><span class="table-cell-content">{{upload.Username}}</span></td>
+                            @*<td><button class="btn-link"><span class="glyphicon glyphicon-edit"></span></button></td>*@
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </td>
+</template>
+<script>
+    var DocumentDetails = {
+        name: 'document-details',
+        template: '#document-details-template',
+        props: ['documentnames', 'uploaded', 'readonly', 'dealerid']
+    }
+</script>

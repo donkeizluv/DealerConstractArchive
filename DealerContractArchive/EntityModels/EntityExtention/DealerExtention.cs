@@ -25,6 +25,14 @@ namespace DealerContractArchive.EntityModels
                 return StartEffective.ToShortDateString();
             }
         }
+        public string SignDateShortDate
+        {
+            get
+            {
+                if (SignDate == null) return string.Empty;
+                return SignDate?.ToShortDateString();
+            }
+        }
         public string EndEffectiveShortDate
         {
             get

@@ -15,6 +15,7 @@ namespace DealerContractArchive.EntityModels
         public string GroupName { get; set; }
         public string BussinessId { get; set; }
         public string TaxId { get; set; }
+        public string ContractNo { get; set; }
         public string DealerName { get; set; }
         public string RegisteredName { get; set; }
         public string Representative { get; set; }
@@ -24,6 +25,7 @@ namespace DealerContractArchive.EntityModels
         public string Hqaddress { get; set; }
         public string Phone { get; set; }
         public string Fax { get; set; }
+        public DateTime? SignDate { get; set; }
         public DateTime StartEffective { get; set; }
         public DateTime EndEffective { get; set; }
         public string Delegate { get; set; }

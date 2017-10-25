@@ -5,6 +5,14 @@ hr {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+.left-line {
+    border-left: thin solid #e0e0e0;
+    border-bottom: none;
+}
+.no-top-border{
+    border-top: none;
+    border: none;
+}
 .table-cell-content{
     font-size: small;
     font-weight: 500;
@@ -17,6 +25,9 @@ hr {
 }
 .bottom-buffer{
     margin-bottom: 25px;
+}
+.right-buffer {
+    margin-right: 25px;
 }
 .top-buffer {
     margin-top: 25px;

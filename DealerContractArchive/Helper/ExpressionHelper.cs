@@ -12,7 +12,7 @@ namespace DealContractArchiver.ViewModels.Helper
             var parameterExp = Expression.Parameter(typeof(T), "type");
             var propertyExp = Expression.Property(parameterExp, propertyName);
             MethodInfo method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-            if (propertyExp.Type == typeof(Int32)) //incase column is not string
+            if (propertyExp.Type == typeof(Int32)) //incase column is int
             {
                 method = typeof(Int32).GetMethod("Equals", new[] { typeof(Int32) });
                 int.TryParse(containsValue, out int value);

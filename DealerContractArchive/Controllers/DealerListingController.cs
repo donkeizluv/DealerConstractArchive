@@ -84,35 +84,55 @@ namespace DealerContractArchive.Views
         //            }
         //        }
 
-        ////setting....
-        //private const string AcceptedUploadType = "application/pdf";
-        //private readonly double MinFileLength = 0;
+        //setting....
+        private const string AcceptedUploadType = "application/pdf";
+        private readonly double MinFileLength = 0;
 
-        //[HttpPost]
-        //[Authorize(Roles = "Admin, User")]
-        //public IActionResult UploadScan([FromQuery]int contractId)
-        //{
-        //    var files = Request.Form.Files;
-        //    if (files.Count < 1 || files.Count > 1) return BadRequest("Invalid file count.");
-        //    var file = files.First();
-        //    if (file.Length < (int)MinFileLength) return BadRequest("File is too small");
-        //    if (string.Compare(file.ContentType, AcceptedUploadType, true) != 0) return BadRequest("Invalid file type.");
-        //    using (var context = new DealerContractContext())
-        //    {
-        //        var contract = context.Contracts.FirstOrDefault(c => c.ContractId == contractId);
-        //        if (contract == null) return BadRequest("Contract not found");
-        //        if (!string.IsNullOrEmpty(contract.ScannedContractUrl)) return BadRequest("Contract has scan uploaded already");
-
-        //        if (!SaveScan(file, contract.ContractId))
-        //        {
-        //            throw new InvalidOperationException();
-        //        }
-        //        contract.ScannedContractUrl = EnviromentHelper.ScanFilePathMaker(file.FileName, contract.ContractId);
-        //        context.SaveChanges();
-        //    }
-        //    return Ok();
-        //}
-
+        [HttpPost]
+        [Authorize(Roles = "Admin, User")]
+        public IActionResult UploadScan([FromQuery]int dealerId)
+        {
+            var files = Request.Form.Files;
+            if (files.Count < 1 || files.Count > 1) return BadRequest("Invalid file count.");
+            var file = files.First();
+            if (file.Length < (int)MinFileLength) return BadRequest("File is too small");
+            if (string.Compare(file.ContentType, AcceptedUploadType, true) != 0) return BadRequest("Invalid file type.");
+            using (var context = new DealerContractContext())
+            {
+                var dealer = context.Dealer.FirstOrDefault(c => c.DealerId == dealerId);
+                if (dealer == null) return BadRequest($"Dealer id: {dealerId} not found");
+                //add new Scan entry
+                var fileName = EnviromentHelper.ScanFilePathMaker(file.FileName, dealerId);
+                var scan = context.Scan.Add(new Scan()
+                {
+                    DealerId = dealer.DealerId,
+                    UploadDate = DateTime.Now,
+                    Username = User.Identity.Name,
+                    FilePath = fileName
+                });
+                //save file
+                if (!SaveScan(file, fileName))
+                {
+                    throw new InvalidProgramException();
+                }
+                context.SaveChanges();
+            }
+            return Ok();
+        }
+        private bool SaveScan(IFormFile file, string fileName)
+        {
+            //do save
+            //if file exists?
+            var path = Path.Combine(EnviromentHelper.RootPath, EnviromentHelper.ScanFolder);
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            var fullPath = Path.Combine(path, fileName);
+            if ((new FileInfo(fileName)).Exists) return false;
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+            return true;
+        }
         private List<string> GetDocumentNames()
         {
             using (var context = new DealerContractContext())
@@ -127,20 +147,6 @@ namespace DealerContractArchive.Views
             }
         }
 
-        private bool SaveScan(IFormFile file, int index)
-        {
-            //do save
-            //if file exists?
-            var path = Path.Combine(EnviromentHelper.RootPath, EnviromentHelper.ScanFolder);
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            var fileName = Path.Combine(path, EnviromentHelper.ScanFilePathMaker(file.FileName, index));
-            if ((new FileInfo(fileName)).Exists) return false;
-            using (var stream = new FileStream(fileName, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
-            return true;
-        }
         private static string FilterColumnTranslater(int value)
         {
             switch (value)
@@ -156,7 +162,6 @@ namespace DealerContractArchive.Views
                 default:
                     return string.Empty;
             }
-
         }
         //wow!
         //https://stackoverflow.com/questions/2728340/how-can-i-do-an-orderby-with-a-dynamic-string-parameter
@@ -178,6 +183,8 @@ namespace DealerContractArchive.Views
                     return i => i.Phone;
                 case "Username":
                     return i => i.Username;
+                case "ContractNo":
+                    return i => i.ContractNo;
                 default:
                     return i => i.GroupName;
             }
@@ -188,7 +195,7 @@ namespace DealerContractArchive.Views
             using (var context = new DealerContractContext())
             {
                 int excludedRows = (page - 1) * DealerListingViewModel.ItemPerPage;
-                var query = context.Dealer.Include(d => d.Pos)
+                var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan)
                     .Where(ExpressionHelper.GetContainsExpression<Dealer>(columnName, filterString));
                 totalRows = query.Count();
                 var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
@@ -203,22 +210,22 @@ namespace DealerContractArchive.Views
             using (var context = new DealerContractContext())
             {
                 int excludedRows = (getPage - 1) * DealerListingViewModel.ItemPerPage;
-                var query = context.Dealer.Include(d => d.Pos);
+                var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan);
                 totalRows = query.Count();
                 var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
                 return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
             }
         }
 
-        private List<Pos> GetPos(int dealerId)
-        {
-            using (var context = new DealerContractContext())
-            {
-                //populate pos list
-                var dealer = context.Dealer.Include(d => d.Pos).FirstOrDefault(d => d.DealerId == dealerId);
-                //var dealer = context.Dealer.FirstOrDefault(d => d.DealerId == dealerId)
-                return dealer.Pos.ToList();
-            }
-        }
+        //private List<Pos> GetPos(int dealerId)
+        //{
+        //    using (var context = new DealerContractContext())
+        //    {
+        //        //populate pos list
+        //        var dealer = context.Dealer.Include(d => d.Pos).FirstOrDefault(d => d.DealerId == dealerId);
+        //        //var dealer = context.Dealer.FirstOrDefault(d => d.DealerId == dealerId)
+        //        return dealer.Pos.ToList();
+        //    }
+        //}
     }
 }

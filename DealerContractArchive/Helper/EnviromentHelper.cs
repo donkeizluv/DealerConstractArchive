@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DealerContractArchive.Helper
 {
@@ -10,17 +8,21 @@ namespace DealerContractArchive.Helper
         public static string ScanFolder = "UploadedScans";
         public static string DocumentFolder = "PrintDocument";
         public static string RootPath { get; set; }
-        public static string ScanFilePathMaker(string fileName, int index)
+        public static string ScanFilePathMaker(string fileName, int dealerId)
         {
-            return $"contract_{index}_{fileName}";
+            return $"{dealerId}_{GetNowSalt()}_{fileName}";
         }
-        public static string GetScanfileFullPath(string fileName, int index)
+        public static string GetScanfileFullPath(string fileName)
         {
             return $"{RootPath}\\{ScanFolder}\\{fileName}";
         }
         public static string GetDocumentFullPath(string fileName)
         {
             return $"{RootPath}\\{DocumentFolder}\\{fileName}";
+        }
+        public static string GetNowSalt()
+        {
+            return DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
         }
     }
 }
