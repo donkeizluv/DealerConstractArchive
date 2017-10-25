@@ -5,14 +5,6 @@ hr {
     margin-top: 15px;
     margin-bottom: 15px;
 }
-.left-line {
-    border-left: thin solid #e0e0e0;
-    border-bottom: none;
-}
-.no-top-border{
-    border-top: none;
-    border: none;
-}
 .table-cell-content{
     font-size: small;
     font-weight: 500;
@@ -23,14 +15,14 @@ hr {
 .left-buffer{
     margin-left: 50px;
 }
-.bottom-buffer{
-    margin-bottom: 25px;
+.bottom-buffer {
+    margin-bottom: 20px;
 }
 .right-buffer {
-    margin-right: 25px;
+    margin-right: 20px;
 }
 .top-buffer {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 .container-table {
     display: table;

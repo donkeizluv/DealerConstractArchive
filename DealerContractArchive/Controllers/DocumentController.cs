@@ -6,9 +6,6 @@ using System.IO;
 using System.Text;
 using GemBox.Document;
 using Microsoft.AspNetCore.Authorization;
-//using GemBox.Document;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DealerContractArchive.Controllers
 {
