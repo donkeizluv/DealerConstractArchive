@@ -1,6 +1,10 @@
 ﻿body {
     padding-top: 40px;
 }
+hr {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 .table-cell-content{
     font-size: small;
     font-weight: 500;

@@ -19,6 +19,12 @@ namespace DealerContractArchive.EntityModels
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(@"data source=(localdb)\local;initial catalog=DealerContract;Integrated Security=true;");
+                //optionsbuilder.usesqlserver(@"data source=prd-vn-hdesk01\sqlexpress;
+                //    initial catalog=dealercontract;
+                //    persist security info=true;
+                //    user id=sa_dev;password=760119;
+                //    multipleactiveresultsets=true;
+                //    app=entityframework");
             }
         }
 

@@ -99,6 +99,9 @@ namespace AuthorizationLab.Controllers
 
         private bool ValidateCredentials(string userName, string pwd)
         {
+#if DEBUG
+            return true;
+#endif
             using (var pc = new System.DirectoryServices.AccountManagement.PrincipalContext(System.DirectoryServices.AccountManagement.ContextType.Domain, Domain))
             {
                 // validate the credentials

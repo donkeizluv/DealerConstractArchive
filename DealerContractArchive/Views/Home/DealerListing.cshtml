@@ -34,7 +34,7 @@
                     <td><button class="btn btn-link btn-group-sm"  v-on:click="CollapseAll"><span class="glyphicon glyphicon-minus"></span> All</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('GroupName')"><span v-html="DisplayOrderButtonStates('GroupName')"></span>Group</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('DealerName')"><span v-html="DisplayOrderButtonStates('DealerName')"></span>Dealer Name</button></td>
-                    <td><button class="btn btn-link" v-on:click="OrderByClicked('ResigteredName')"><span v-html="DisplayOrderButtonStates('ResigteredName')"></span>Resigtered Name</button></td>
+                    @*<td><button class="btn btn-link" v-on:click="OrderByClicked('ResigteredName')"><span v-html="DisplayOrderButtonStates('ResigteredName')"></span>Resigtered Name</button></td>*@
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('TaxId')"><span v-html="DisplayOrderButtonStates('TaxId')"></span>Tax Id</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('Effective')"><span v-html="DisplayOrderButtonStates('Effective')"></span>Effective</button></td>
                     <td><button class="btn btn-link" v-on:click="OrderByClicked('Phone')"><span v-html="DisplayOrderButtonStates('Phone')"></span>Phone</button></td>
@@ -57,7 +57,7 @@
                         </td>
                         <td nowrap><span class="table-cell-content">{{dealer.GroupName}}</span></td>
                         <td><span class="table-cell-content">{{dealer.DealerName}}</span></td>
-                        <td><span class="table-cell-content">{{dealer.RegisteredName}}</span></td>
+                        @*<td><span class="table-cell-content">{{dealer.RegisteredName}}</span></td>*@
                         <td nowrap><span class="table-cell-content">{{dealer.TaxId}}</span></td>
                         <td><span class="table-cell-content">{{dealer.Effective}}</span></td>
                         <td nowrap><span class="table-cell-content">{{dealer.Phone}}</span></td>
@@ -82,8 +82,9 @@
             @*https://github.com/lokyoung/vuejs-paginate*@
             <page-nav :page-count="TotalPages"
                       :click-handler="PageNavClicked"
-                      :page-range="8"
+                      :page-range="3"
                       :prev-text="'&lsaquo;'"
+                      :force-page="OnPage - 1"
                       :next-text="'&rsaquo;'"
                       :page-class="'page-item'"
                       :page-link-class="'page-link'"
@@ -126,11 +127,12 @@
                 //so just store values instead of the object
                 //maybe change the values name to advoid confusing?
                 SearchString: "",
-                SelectedFilterValue: 2,
+                SelectedFilterValue: 1,
 
                 //sorting
                 OrderBy: "GroupName",
                 OrderAsc: true,
+                Loading: false, //kinda like loading, prevent clicking
 
                 //listing, nav
                 DealerViewerModel: [],
@@ -174,7 +176,7 @@
                 api = api.replace("{contains}", this.$data.SearchString);
                 api = api.replace("{orderBy}", this.$data.OrderBy);
                 api = api.replace("{asc}", this.$data.OrderAsc);
-                console.log(api);
+                //console.log(api);
                 return CurrentHost + api;
             }
         },
@@ -222,6 +224,7 @@
             //load contracts on startup
             //loading animation?
             LoadDealers: function (url) {
+                this.$data.Loading = true;
                 var that = this;
                 //that.$data.IsLoading = true; //way too fast to show loading animation, causes jerking in UI
                 //console.log(url);
@@ -231,6 +234,7 @@
                         that.$data.DealerModels = response.data.DealerModels;
                         that.$data.DocumentNames = response.data.DocumentNames;
                         that.UpdatePagination();
+                        that.$data.Loading = false;
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -288,6 +292,7 @@
             },
 
             OrderByClicked: function (orderBy) {
+                if (this.$data.Loading) return;
                 //if already ordery by this -> change Asc
                 if (this.$data.OrderBy == orderBy) {
                     this.$data.OrderAsc = !this.$data.OrderAsc;
@@ -301,7 +306,7 @@
             },
 
             DisplayOrderButtonStates: function (orderBy) {
-                console.log(orderBy);
+                //console.log(orderBy);
                 if (orderBy == this.$data.OrderBy) {
                     if(this.$data.OrderAsc)
                         return "&dtrif;";

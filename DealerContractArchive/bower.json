@@ -5,20 +5,22 @@
     "jquery": "3.2.1",
     "jquery-validation": "1.17.0",
     "jquery-validation-unobtrusive": "3.2.6",
-    "vee-validate": "2.0.0-rc.18",
-    "vue-router": "~2.7.0",
-    "axios": "v0.16.2",
-    "vue": "v2.4.4",
+    "vee-validate": "2.0.0-rc.19",
+    "vue-router": "v3.0.1",
+    "axios": "v0.17.0",
+    "vue": "v2.5.2",
     "vue-clip": "https://github.com/thetutlage/vue-clip.git#1.0.0",
     "bootstrap": "v3.3.7",
-    "vuejs-paginate": "https://github.com/lokyoung/vuejs-paginate.git#1.2.0"
+    "vuejs-paginate": "https://github.com/lokyoung/vuejs-paginate.git#~1.4.0"
   },
   "resolutions": {
-    "vee-validate": "2.0.0-rc.18",
+    "vee-validate": "2.0.0-rc.19",
     "jquery": "3.2.1",
     "bootstrap": "v4.0.0-beta",
-    "vue": "v2.4.4",
-    "jquery-validation": "1.17.0"
+    "vue": "v2.5.2",
+    "jquery-validation": "1.17.0",
+    "axios": "v0.17.0",
+    "vue-router": "v3.0.1"
   },
   "ignore": [
     "**/.*",
