@@ -4,7 +4,7 @@
             <div class="block-update-card">
                 <div class="update-card-body">
                     <div class="pull-right right-buffer">
-                        <button v-show="!readonly" class="btn btn-sm">
+                        <button v-show="!readonly" class="btn btn-sm" v-on:click="$emit('showprintdocclicked', dealerid)">
                             <span class="glyphicon glyphicon-print"></span>
                         </button>
                         <button v-show="!readonly" class="btn btn-sm" v-on:click="$emit('showuploadmodalclicked', dealerid)">

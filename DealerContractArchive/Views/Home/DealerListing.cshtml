@@ -77,7 +77,8 @@
                                         v-bind:uploaded="dealer.Scan"
                                         v-bind:dealerid="dealer.DealerId"
                                         v-show="IsShowingDocDetails(dealer.DealerId)"
-                                        v-bind:readonly=readonly></doc-details>
+                                        v-bind:readonly=readonly
+                                        v-on:showprintdocclicked="PrinDocumentModalHandler"></doc-details>
                         @*any better ways to do this?*@
                     </tr>
                 </template>
