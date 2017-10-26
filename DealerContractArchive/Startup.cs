@@ -6,10 +6,9 @@ using Newtonsoft.Json.Serialization;
 using DealerContractArchive.Helper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
-using System.Net;
 using Newtonsoft.Json;
+using DealerContractArchive.EntityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DealerContractArchive
 {
@@ -25,6 +24,12 @@ namespace DealerContractArchive
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //injecting
+            //this will inject context to controller ctor
+            services.AddDbContext<DealerContractContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddSingleton<IConfiguration>(Configuration);
+
             //auth service
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,

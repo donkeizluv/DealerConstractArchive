@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using GemBox.Document;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace DealerContractArchive.Controllers
 {
@@ -14,15 +15,22 @@ namespace DealerContractArchive.Controllers
     {
         private const string GemboxDocumentKey = "DTJX-2LSB-QJV3-R3XP";
 
+        private DealerContractContext _context;
+        private IConfiguration _config;
+        public DocumentController(DealerContractContext context, IConfiguration config)
+        {
+            _context = context;
+            _config = config;
+        }
         [HttpGet]
         public IActionResult GetDocument([FromQuery] int dealerId, [FromQuery] string docName)
         {
-            using (var context = new DealerContractContext())
+            using (_context)
             {
-                var dealer = context.Dealer.FirstOrDefault(c => c.DealerId == dealerId);
+                var dealer = _context.Dealer.FirstOrDefault(c => c.DealerId == dealerId);
                 if (dealer == null) return BadRequest();
 
-                var document = context.Document.FirstOrDefault(c => string.Compare(docName, c.Name, true) == 0);
+                var document = _context.Document.FirstOrDefault(c => string.Compare(docName, c.Name, true) == 0);
                 if (document == null) return BadRequest();
                 var docFullPath = EnviromentHelper.GetDocumentFullPath(document.Filename);
 

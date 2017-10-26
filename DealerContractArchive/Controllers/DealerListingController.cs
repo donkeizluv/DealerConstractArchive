@@ -10,6 +10,7 @@ using System.IO;
 using DealerContractArchive.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,29 +20,41 @@ namespace DealerContractArchive.Views
     [Authorize]
     public class DealerListingController : Controller
     {
+        private DealerContractContext _context;
+        private IConfiguration _config;
+        public DealerListingController(DealerContractContext context, IConfiguration config)
+        {
+            _context = context;
+            _config = config;
+        }
+
         [HttpGet]
         public DealerListingViewModel GetContractViewerModel([FromQuery] int page = 1, [FromQuery] bool filter = false, [FromQuery] int type = 0, [FromQuery] string contains = "", [FromQuery] string orderBy = "", [FromQuery] bool asc = true)
         {
-            var model = new DealerListingViewModel();
-            //set model state
-            var filterColumnName = FilterColumnTranslater(type);
-            model.FilterType = filterColumnName.ToString();
-            model.IsFilterApplied = filter;
-            model.FilterString = contains;
-            model.DocumentNames = GetDocumentNames();
-            int totalRows;
-            if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
+            using (_context)
             {
-                model.DealerModels = GetFilteredDealers(filterColumnName, contains, page, orderBy, asc, out totalRows);
-            }
-            else
-            {
-                model.DealerModels = GetDealers(out totalRows, page, orderBy, asc);
-            }
-            model.UpdatePagination(totalRows);
+                var model = new DealerListingViewModel();
+                //set model state
+                var filterColumnName = FilterColumnTranslater(type);
+                model.FilterType = filterColumnName.ToString();
+                model.IsFilterApplied = filter;
+                model.FilterString = contains;
+                model.DocumentNames = GetDocumentNames(_context);
+                int totalRows;
+                if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
+                {
+                    model.DealerModels = GetFilteredDealers(_context, filterColumnName, contains, page, orderBy, asc, out totalRows);
+                }
+                else
+                {
+                    model.DealerModels = GetDealers(_context, out totalRows, page, orderBy, asc);
+                }
+                model.UpdatePagination(totalRows);
 
-            //model.DealerModels.ForEach(dealer => dealer.Pos = GetPos(dealer.DealerId));
-            return model;
+                //model.DealerModels.ForEach(dealer => dealer.Pos = GetPos(dealer.DealerId));
+                return model;
+            }
+          
         }
 
         //        [HttpPost]
@@ -97,13 +110,13 @@ namespace DealerContractArchive.Views
             var file = files.First();
             if (file.Length < (int)MinFileLength) return BadRequest("File is too small");
             if (string.Compare(file.ContentType, AcceptedUploadType, true) != 0) return BadRequest("Invalid file type.");
-            using (var context = new DealerContractContext())
+            using (_context)
             {
-                var dealer = context.Dealer.FirstOrDefault(c => c.DealerId == dealerId);
+                var dealer = _context.Dealer.FirstOrDefault(c => c.DealerId == dealerId);
                 if (dealer == null) return BadRequest($"Dealer id: {dealerId} not found");
                 //add new Scan entry
                 var fileName = EnviromentHelper.ScanFilePathMaker(file.FileName, dealerId);
-                var scan = context.Scan.Add(new Scan()
+                var scan = _context.Scan.Add(new Scan()
                 {
                     DealerId = dealer.DealerId,
                     UploadDate = DateTime.Now,
@@ -115,7 +128,7 @@ namespace DealerContractArchive.Views
                 {
                     throw new InvalidProgramException();
                 }
-                context.SaveChanges();
+                _context.SaveChanges();
             }
             return Ok();
         }
@@ -133,18 +146,15 @@ namespace DealerContractArchive.Views
             }
             return true;
         }
-        private List<string> GetDocumentNames()
+        private List<string> GetDocumentNames(DealerContractContext context)
         {
-            using (var context = new DealerContractContext())
+            var list = new List<string>();
+            foreach (var doc in context.Document)
             {
-                var list = new List<string>();
-                foreach (var doc in context.Document)
-                {
-                    if (!doc.Effective) continue;
-                    list.Add(doc.Name);
-                }
-                return list;
+                if (!doc.Effective) continue;
+                list.Add(doc.Name);
             }
+            return list;
         }
 
         private static string FilterColumnTranslater(int value)
@@ -190,31 +200,25 @@ namespace DealerContractArchive.Views
             }
         }
 
-        private List<Dealer> GetFilteredDealers(string columnName, string filterString, int page, string orderBy, bool asc, out int totalRows)
+        private List<Dealer> GetFilteredDealers(DealerContractContext context, string columnName, string filterString, int page, string orderBy, bool asc, out int totalRows)
         {
-            using (var context = new DealerContractContext())
-            {
-                int excludedRows = (page - 1) * DealerListingViewModel.ItemPerPage;
-                var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan)
-                    .Where(ExpressionHelper.GetContainsExpression<Dealer>(columnName, filterString));
-                totalRows = query.Count();
-                var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
-                //set total rows
-                return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
-            }
+            int excludedRows = (page - 1) * DealerListingViewModel.ItemPerPage;
+            var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan)
+                .Where(ExpressionHelper.GetContainsExpression<Dealer>(columnName, filterString));
+            totalRows = query.Count();
+            var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
+            //set total rows
+            return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
         }
 
-        private List<Dealer> GetDealers(out int totalRows, int pageNum, string orderBy, bool asc)
+        private List<Dealer> GetDealers(DealerContractContext context, out int totalRows, int pageNum, string orderBy, bool asc)
         {
             int getPage = pageNum < 1 ? 1 : pageNum;
-            using (var context = new DealerContractContext())
-            {
-                int excludedRows = (getPage - 1) * DealerListingViewModel.ItemPerPage;
-                var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan);
-                totalRows = query.Count();
-                var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
-                return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
-            }
+            int excludedRows = (getPage - 1) * DealerListingViewModel.ItemPerPage;
+            var query = context.Dealer.Include(d => d.Pos).Include(d => d.Scan);
+            totalRows = query.Count();
+            var ordered = asc ? query.OrderBy(OrderTranslater(orderBy)) : query.OrderByDescending(OrderTranslater(orderBy));
+            return ordered.Skip(excludedRows).Take(DealerListingViewModel.ItemPerPage).ToList();
         }
 
         //private List<Pos> GetPos(int dealerId)

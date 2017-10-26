@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,38 @@ namespace AuthorizationLab.Controllers
 {
     public class AccountController : Controller
     {
-        private const string Issuer = "https://hdsaison.com.vn";
         private const string LoginStatusKey = "LoginStatus";
-        private readonly string Domain = "sgvf.sgcf"; //doesnt really matter :/
+        //maybe private methods are more suitable since controllers dont seem to get call anywhere in code :/
+        public string Issuer
+        {
+            get
+            {
+                return _config.GetSection("Authentication").GetValue<string>("Issuer");
+            }
+        }
+        public bool NoPwdCheck
+        {
+            get
+            {
+                return _config.GetSection("Authentication").GetValue<bool>("NoPwdCheck");
+            }
+        }
+
+        public string Domain
+        {
+            get
+            {
+                return _config.GetSection("Authentication").GetValue<string>("Domain");
+            }
+        }
+
+        private DealerContractContext _context;
+        private IConfiguration _config;
+        public AccountController(DealerContractContext context, IConfiguration config)
+        {
+            _context = context;
+            _config = config;
+        }
 
         public enum LoginLevel
         {
@@ -99,9 +129,7 @@ namespace AuthorizationLab.Controllers
 
         private bool ValidateCredentials(string userName, string pwd)
         {
-#if DEBUG
-            return true;
-#endif
+            if (NoPwdCheck) return true;
             using (var pc = new System.DirectoryServices.AccountManagement.PrincipalContext(System.DirectoryServices.AccountManagement.ContextType.Domain, Domain))
             {
                 // validate the credentials
@@ -113,9 +141,9 @@ namespace AuthorizationLab.Controllers
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(pwd))
                 return LoginLevel.Error;
             if (!ValidateCredentials(userName, pwd)) return LoginLevel.Error;
-            using (var context = new DealerContractContext())
+            using (_context)
             {
-                var user = context.Users.FirstOrDefault(u => string.Compare(u.Username, userName, true) == 0);
+                var user = _context.Users.FirstOrDefault(u => string.Compare(u.Username, userName, true) == 0);
                 if (user == null) return LoginLevel.Error;
                 var accountType = user.Type;
                 if (!Enum.IsDefined(typeof(LoginLevel), accountType))

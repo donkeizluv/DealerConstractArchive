@@ -7,6 +7,7 @@ using DealerContractArchive.EntityModels;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,6 +16,14 @@ namespace DealerContractArchive.Controllers
     [Authorize]
     public class ScanController : Controller
     {
+        private DealerContractContext _context;
+        private IConfiguration _config;
+        public ScanController(DealerContractContext context, IConfiguration config)
+        {
+            _context = context;
+            _config = config;
+        }
+
         // GET: /<controller>/
         //https://docs.microsoft.com/en-us/aspnet/core/mvc/models/formatting
         [HttpGet]
@@ -25,9 +34,9 @@ namespace DealerContractArchive.Controllers
             int id = scanId ?? -1;
             int index;
             string dbFilename = string.Empty;
-            using (var context = new DealerContractContext())
+            using (_context)
             {
-                var scan = context.Scan.FirstOrDefault(c => c.ScanId == id);
+                var scan = _context.Scan.FirstOrDefault(c => c.ScanId == id);
                 if (scan == null) return BadRequest();
                 index = scan.ScanId;
                 dbFilename = scan.FilePath;

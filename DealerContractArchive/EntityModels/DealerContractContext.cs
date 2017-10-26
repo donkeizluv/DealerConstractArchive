@@ -14,6 +14,12 @@ namespace DealerContractArchive.EntityModels
         public virtual DbSet<Scan> Scan { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
+        //this will get injected with option builder
+        public DealerContractContext(DbContextOptions<DealerContractContext> options) : base(options)
+        {
+
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

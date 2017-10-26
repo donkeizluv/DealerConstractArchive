@@ -21,6 +21,12 @@ namespace DealerContractArchive
             WebHost.CreateDefaultBuilder(args)
                 .UseKestrel()
                 .UseIISIntegration()
+                //read json config file
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    IHostingEnvironment env = builderContext.HostingEnvironment;
+                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                })
                 .UseStartup<Startup>()
                 .Build();
         //WebHost.CreateDefaultBuilder(args)
