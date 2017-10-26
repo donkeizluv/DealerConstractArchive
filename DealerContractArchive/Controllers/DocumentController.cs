@@ -14,7 +14,13 @@ namespace DealerContractArchive.Controllers
     public class DocumentController : Controller
     {
         private const string GemboxDocumentKey = "DTJX-2LSB-QJV3-R3XP";
-
+        public string DocumentFolder
+        {
+            get
+            {
+                return _config.GetSection("FileStorage").GetValue<string>("DocumentFolder");
+            }
+        }
         private DealerContractContext _context;
         private IConfiguration _config;
         public DocumentController(DealerContractContext context, IConfiguration config)
@@ -32,7 +38,7 @@ namespace DealerContractArchive.Controllers
 
                 var document = _context.Document.FirstOrDefault(c => string.Compare(docName, c.Name, true) == 0);
                 if (document == null) return BadRequest();
-                var docFullPath = EnviromentHelper.GetDocumentFullPath(document.Filename);
+                var docFullPath = EnviromentHelper.GetDocumentFullPath(document.Filename, DocumentFolder);
 
                 if (!(new FileInfo(docFullPath)).Exists) return NoContent();
                 string docContent = System.IO.File.ReadAllText(docFullPath);

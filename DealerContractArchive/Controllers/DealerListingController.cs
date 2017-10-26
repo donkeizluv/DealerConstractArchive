@@ -20,6 +20,15 @@ namespace DealerContractArchive.Views
     [Authorize]
     public class DealerListingController : Controller
     {
+
+        public string ScanFolder
+        {
+            get
+            {
+                return _config.GetSection("FileStorage").GetValue<string>("ScanFolder");
+            }
+        }
+
         private DealerContractContext _context;
         private IConfiguration _config;
         public DealerListingController(DealerContractContext context, IConfiguration config)
@@ -136,7 +145,7 @@ namespace DealerContractArchive.Views
         {
             //do save
             //if file exists?
-            var path = Path.Combine(EnviromentHelper.RootPath, EnviromentHelper.ScanFolder);
+            var path = Path.Combine(EnviromentHelper.RootPath, ScanFolder);
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             var fullPath = Path.Combine(path, fileName);
             if ((new FileInfo(fileName)).Exists) return false;

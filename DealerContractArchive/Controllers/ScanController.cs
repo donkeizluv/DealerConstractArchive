@@ -18,6 +18,13 @@ namespace DealerContractArchive.Controllers
     {
         private DealerContractContext _context;
         private IConfiguration _config;
+        public string ScanFolder
+        {
+            get
+            {
+                return _config.GetSection("FileStorage").GetValue<string>("ScanFolder");
+            }
+        }
         public ScanController(DealerContractContext context, IConfiguration config)
         {
             _context = context;
@@ -42,7 +49,7 @@ namespace DealerContractArchive.Controllers
                 dbFilename = scan.FilePath;
                 if (string.IsNullOrEmpty(dbFilename)) return BadRequest("This contract has not uploaded scan yet.");
             }
-            string fullPath = EnviromentHelper.GetScanfileFullPath(dbFilename);
+            string fullPath = EnviromentHelper.GetScanfileFullPath(dbFilename, ScanFolder);
             if (!(new FileInfo(fullPath)).Exists) return NoContent();
 
             //https://stackoverflow.com/questions/42460198/return-file-in-asp-net-core-web-api
