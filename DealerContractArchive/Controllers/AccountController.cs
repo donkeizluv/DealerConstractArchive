@@ -50,6 +50,7 @@ namespace AuthorizationLab.Controllers
         public enum LoginLevel
         {
             Error,
+            NoPermission,
             User,
             ReadOnly,
             Admin
@@ -77,6 +78,7 @@ namespace AuthorizationLab.Controllers
 
             var loginLevel = GetLoginLevel(userName, pwd);
             if (loginLevel == LoginLevel.Error) return LoginFail();
+            if (loginLevel == LoginLevel.NoPermission) return NoPermission();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName, ClaimValueTypes.String, Issuer),
@@ -100,6 +102,11 @@ namespace AuthorizationLab.Controllers
         private IActionResult LoginFail()
         {
             TempData["LoginStatus"] = "Login failed."; //pass data to redirect
+            return RedirectToAction("Login", "Account");
+        }
+        private IActionResult NoPermission()
+        {
+            TempData["LoginStatus"] = "No permission found."; //pass data to redirect
             return RedirectToAction("Login", "Account");
         }
 
@@ -144,7 +151,12 @@ namespace AuthorizationLab.Controllers
             using (_context)
             {
                 var user = _context.Users.FirstOrDefault(u => string.Compare(u.Username, userName, true) == 0);
-                if (user == null) return LoginLevel.Error;
+                if (user == null)
+                {
+                    //no permission
+                    return LoginLevel.NoPermission;
+                }
+
                 var accountType = user.Type;
                 if (!Enum.IsDefined(typeof(LoginLevel), accountType))
                     return LoginLevel.Error;

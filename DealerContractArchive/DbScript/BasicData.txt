@@ -1,0 +1,29 @@
+﻿USE [DealerContract]
+GO
+INSERT [dbo].[AccountType] ([Type], [Description]) VALUES (N'Admin', N'Administrator')
+GO
+INSERT [dbo].[AccountType] ([Type], [Description]) VALUES (N'ReadOnly', N'For read purposes')
+GO
+INSERT [dbo].[AccountType] ([Type], [Description]) VALUES (N'User', N'Normal user')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'admin', N'Admin', 1, N'dev admin')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'luu.nhat-hong', N'User', 1, N'ad test')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'readonly1', N'ReadOnly', 1, N'test readonly')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'test_admin', N'User', 1, N'test login on ROG')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'user1', N'User', 1, N'test user1')
+GO
+INSERT [dbo].[Users] ([Username], [Type], [Active], [Description]) VALUES (N'user2', N'User', 0, N'test de-active')
+GO
+SET IDENTITY_INSERT [dbo].[Document] ON 
+
+GO
+INSERT [dbo].[Document] ([DocumentId], [Name], [Date], [Filename], [Effective]) VALUES (1, N'Doc_A1', CAST(N'2017-10-11' AS Date), N'Document_A_1.txt', 1)
+GO
+INSERT [dbo].[Document] ([DocumentId], [Name], [Date], [Filename], [Effective]) VALUES (2, N'Doc_A2', CAST(N'2017-10-11' AS Date), N'Document_A_2.txt', 1)
+GO
+SET IDENTITY_INSERT [dbo].[Document] OFF
+GO

@@ -1,0 +1,210 @@
+﻿USE [DealerContract]
+GO
+/****** Object:  Table [dbo].[AccountType]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AccountType](
+	[Type] [varchar](50) NOT NULL,
+	[Description] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_AccountType] PRIMARY KEY CLUSTERED 
+(
+	[Type] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Dealer]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Dealer](
+	[DealerId] [int] IDENTITY(1,1) NOT NULL,
+	[GroupName] [nvarchar](50) NOT NULL,
+	[BussinessId] [varchar](50) NOT NULL,
+	[TaxId] [varchar](50) NOT NULL,
+	[ContractNo] [nvarchar](50) NOT NULL,
+	[DealerName] [nvarchar](100) NOT NULL,
+	[RegisteredName] [nvarchar](100) NOT NULL,
+	[Representative] [nvarchar](50) NOT NULL,
+	[Gender] [bit] NOT NULL,
+	[Position] [nvarchar](50) NOT NULL,
+	[Owner] [nvarchar](50) NULL,
+	[HQAddress] [nvarchar](100) NOT NULL,
+	[Phone] [varchar](50) NOT NULL,
+	[Fax] [varchar](50) NULL,
+	[SignDate] [date] NULL,
+	[StartEffective] [date] NOT NULL,
+	[EndEffective] [date] NOT NULL,
+	[Delegate] [nvarchar](50) NULL,
+	[SubDelegate] [nvarchar](50) NULL,
+	[Username] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Contracts] PRIMARY KEY CLUSTERED 
+(
+	[DealerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[DealerGroup]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DealerGroup](
+	[GroupName] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_DealerGroup] PRIMARY KEY CLUSTERED 
+(
+	[GroupName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Document]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Document](
+	[DocumentId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Date] [date] NOT NULL,
+	[Filename] [nvarchar](150) NOT NULL,
+	[Effective] [bit] NOT NULL,
+ CONSTRAINT [PK_Documents] PRIMARY KEY CLUSTERED 
+(
+	[DocumentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[POS]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[POS](
+	[PosId] [int] IDENTITY(1,1) NOT NULL,
+	[DealerId] [int] NOT NULL,
+	[PosName] [nvarchar](100) NOT NULL,
+	[PosCode] [varchar](15) NULL,
+	[Address] [nvarchar](100) NULL,
+	[Batch] [int] NOT NULL,
+	[Region] [varchar](50) NOT NULL,
+	[Province] [varchar](50) NOT NULL,
+	[BL] [varchar](50) NOT NULL,
+	[Brand] [varchar](50) NULL,
+	[Status] [varchar](50) NOT NULL,
+	[Username] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_POS] PRIMARY KEY CLUSTERED 
+(
+	[PosId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Scan]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Scan](
+	[ScanId] [int] IDENTITY(1,1) NOT NULL,
+	[DealerId] [int] NOT NULL,
+	[FilePath] [nvarchar](200) NULL,
+	[UploadDate] [date] NOT NULL,
+	[Username] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Scan] PRIMARY KEY CLUSTERED 
+(
+	[ScanId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 10/26/2017 2:53:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[Username] [nvarchar](50) NOT NULL,
+	[Type] [varchar](50) NOT NULL,
+	[Active] [bit] NOT NULL,
+	[Description] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Users_1] PRIMARY KEY CLUSTERED 
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Index [IX_DealerId]    Script Date: 10/26/2017 2:53:36 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_DealerId] ON [dbo].[Dealer]
+(
+	[DealerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_DealerName]    Script Date: 10/26/2017 2:53:36 PM ******/
+CREATE NONCLUSTERED INDEX [IX_DealerName] ON [dbo].[Dealer]
+(
+	[DealerName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_DealerTaxId]    Script Date: 10/26/2017 2:53:36 PM ******/
+CREATE NONCLUSTERED INDEX [IX_DealerTaxId] ON [dbo].[Dealer]
+(
+	[TaxId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+
+GO
+/****** Object:  Index [IX_DealerGroup]    Script Date: 10/26/2017 2:53:36 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_DealerGroup] ON [dbo].[DealerGroup]
+(
+	[GroupName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Dealer]  WITH CHECK ADD  CONSTRAINT [FK_Dealer_DealerGroup] FOREIGN KEY([GroupName])
+REFERENCES [dbo].[DealerGroup] ([GroupName])
+GO
+ALTER TABLE [dbo].[Dealer] CHECK CONSTRAINT [FK_Dealer_DealerGroup]
+GO
+ALTER TABLE [dbo].[Dealer]  WITH CHECK ADD  CONSTRAINT [FK_Dealer_Users] FOREIGN KEY([Username])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[Dealer] CHECK CONSTRAINT [FK_Dealer_Users]
+GO
+ALTER TABLE [dbo].[POS]  WITH CHECK ADD  CONSTRAINT [FK_POS_Dealer] FOREIGN KEY([DealerId])
+REFERENCES [dbo].[Dealer] ([DealerId])
+GO
+ALTER TABLE [dbo].[POS] CHECK CONSTRAINT [FK_POS_Dealer]
+GO
+ALTER TABLE [dbo].[POS]  WITH CHECK ADD  CONSTRAINT [FK_POS_Users] FOREIGN KEY([Username])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[POS] CHECK CONSTRAINT [FK_POS_Users]
+GO
+ALTER TABLE [dbo].[Scan]  WITH CHECK ADD  CONSTRAINT [FK_Scan_Dealer] FOREIGN KEY([DealerId])
+REFERENCES [dbo].[Dealer] ([DealerId])
+GO
+ALTER TABLE [dbo].[Scan] CHECK CONSTRAINT [FK_Scan_Dealer]
+GO
+ALTER TABLE [dbo].[Scan]  WITH CHECK ADD  CONSTRAINT [FK_Scan_Users] FOREIGN KEY([Username])
+REFERENCES [dbo].[Users] ([Username])
+GO
+ALTER TABLE [dbo].[Scan] CHECK CONSTRAINT [FK_Scan_Users]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_AccountType] FOREIGN KEY([Type])
+REFERENCES [dbo].[AccountType] ([Type])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_AccountType]
+GO

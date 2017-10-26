@@ -1,6 +1,6 @@
 ﻿<template id="search-bar-template">
     <div class="container">
-        <form class="form-inline">
+        <div class="form-inline">
             <label for="filter">Filter by:</label>
             &nbsp;
             <select v-model="SearchModel.SelectedFilterValue" name="filter" class="form-control">
@@ -12,7 +12,7 @@
             &nbsp;
             <input v-on:keyup.enter="SearchButtonClicked" v-model="SearchModel.SearchString" type="text" class="form-control" placeholder="Search" />
             <button v-on:click="SearchButtonClicked" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-        </form>
+        </div>
     </div>
 </template>
 <script>

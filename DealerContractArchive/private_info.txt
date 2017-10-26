@@ -7,3 +7,6 @@ persist security info=True;
 user id=sa_dev;password=760119;
 MultipleActiveResultSets=True;
 App=EntityFramework");
+
+
+"data source=PRD-VN-HDESK01\\SQLEXPRESS;initial catalog=DealerContract;persist security info=True;user id=sa_dev;password=760119;MultipleActiveResultSets=True;App=EntityFramework"
