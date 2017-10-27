@@ -135,7 +135,7 @@ namespace DealerContractArchive.Views
                 //save file
                 if (!SaveScan(file, fileName))
                 {
-                    throw new InvalidProgramException();
+                    return BadRequest("File already exists!, contact admin");
                 }
                 _context.SaveChanges();
             }
