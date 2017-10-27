@@ -11,8 +11,8 @@ using DealerContractArchive.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
 
 namespace DealerContractArchive.Views
 {
@@ -20,7 +20,16 @@ namespace DealerContractArchive.Views
     [Authorize]
     public class DealerListingController : Controller
     {
-
+        public double CachedContentLifeMinutes
+        {
+            get
+            {
+                var value = _config.GetSection("CacheOptions").GetValue<double>("CachedContentLifeMinutes");
+                if (value < 1)
+                    return 5; //default if not set
+                return value;
+            }
+        }
         public string ScanFolder
         {
             get
@@ -31,10 +40,12 @@ namespace DealerContractArchive.Views
 
         private DealerContractContext _context;
         private IConfiguration _config;
-        public DealerListingController(DealerContractContext context, IConfiguration config)
+        private IMemoryCache _cache;
+        public DealerListingController(DealerContractContext context, IConfiguration config, IMemoryCache memoryCache)
         {
             _context = context;
             _config = config;
+            _cache = memoryCache;
         }
 
         [HttpGet]
@@ -50,20 +61,38 @@ namespace DealerContractArchive.Views
                 model.FilterString = contains;
                 model.DocumentNames = GetDocumentNames(_context);
                 int totalRows;
-                if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
+                var cacheKey = MakeCacheKey(page, filter, type, contains, orderBy, asc);
+                if (_cache.TryGetValue<List<Dealer>>(cacheKey, out var dealerModels))
                 {
-                    model.DealerModels = GetFilteredDealers(_context, filterColumnName, contains, page, orderBy, asc, out totalRows);
+                    model.DealerModels = dealerModels;
                 }
                 else
                 {
-                    model.DealerModels = GetDealers(_context, out totalRows, page, orderBy, asc);
+                    if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
+                    {
+                        dealerModels = GetFilteredDealers(_context, filterColumnName, contains, page, orderBy, asc, out totalRows);
+                    }
+                    else
+                    {
+                        dealerModels = GetDealers(_context, out totalRows, page, orderBy, asc);
+                    }
+                    _cache.Set(cacheKey, dealerModels, GetDefaultCacheOptions());
+                    model.DealerModels = dealerModels;
+                    model.UpdatePagination(totalRows);
                 }
-                model.UpdatePagination(totalRows);
-
-                //model.DealerModels.ForEach(dealer => dealer.Pos = GetPos(dealer.DealerId));
                 return model;
             }
-          
+        }
+        private MemoryCacheEntryOptions GetDefaultCacheOptions()
+        {
+            return new MemoryCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+            };
+        }
+        private string MakeCacheKey(int page, bool filter, int type, string contains, string orderBy, bool asc)
+        {
+            return $"{page}_{filter}_{type}_{contains}_{orderBy}_{asc}";
         }
 
         //        [HttpPost]
@@ -155,15 +184,25 @@ namespace DealerContractArchive.Views
             }
             return true;
         }
+
+        private const string DocumentListKey = "DocKey_";
         private List<string> GetDocumentNames(DealerContractContext context)
         {
-            var list = new List<string>();
-            foreach (var doc in context.Document)
+            if (_cache.TryGetValue<List<string>>(DocumentListKey, out var docNames))
             {
-                if (!doc.Effective) continue;
-                list.Add(doc.Name);
+                return docNames;
             }
-            return list;
+            else
+            {
+                var list = new List<string>();
+                foreach (var doc in context.Document)
+                {
+                    if (!doc.Effective) continue;
+                    list.Add(doc.Name);
+                }
+                _cache.Set(DocumentListKey, list, GetDefaultCacheOptions());
+                return list;
+            }
         }
 
         private static string FilterColumnTranslater(int value)
@@ -182,6 +221,7 @@ namespace DealerContractArchive.Views
                     return string.Empty;
             }
         }
+
         //wow!
         //https://stackoverflow.com/questions/2728340/how-can-i-do-an-orderby-with-a-dynamic-string-parameter
         private static Func<Dealer, object> OrderTranslater(string orderBy)

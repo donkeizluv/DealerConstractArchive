@@ -24,6 +24,9 @@ namespace DealerContractArchive
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //inject im-mem cache
+            services.AddMemoryCache();
+
             //injecting
             //this will inject context to controller ctor
             services.AddDbContext<DealerContractContext>(options =>
