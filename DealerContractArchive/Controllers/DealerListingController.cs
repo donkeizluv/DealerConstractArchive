@@ -53,32 +53,39 @@ namespace DealerContractArchive.Views
         {
             using (_context)
             {
-                var model = new DealerListingViewModel();
-                //set model state
-                var filterColumnName = FilterColumnTranslater(type);
-                model.FilterType = filterColumnName.ToString();
-                model.IsFilterApplied = filter;
-                model.FilterString = contains;
-                model.DocumentNames = GetDocumentNames(_context);
-                int totalRows;
+                DealerListingViewModel model;
                 var cacheKey = MakeCacheKey(page, filter, type, contains, orderBy, asc);
-                if (_cache.TryGetValue<List<Dealer>>(cacheKey, out var dealerModels))
+                //BUG: no total page in cached
+                if (_cache.TryGetValue<DealerListingViewModel>(cacheKey, out var dealerModels))
                 {
-                    model.DealerModels = dealerModels;
+                    //cached
+                    model = dealerModels;
+                    Debug.Print("From cache...");
                 }
                 else
                 {
+                    //no cached, create new model
+                    Debug.Print("Create new model...");
+                    model = new DealerListingViewModel();
+                    //set model state
+                    var filterColumnName = FilterColumnTranslater(type);
+                    model.FilterType = filterColumnName.ToString();
+                    model.IsFilterApplied = filter;
+                    model.FilterString = contains;
+                    model.DocumentNames = GetDocumentNames(_context);
+                    int totalRows;
+
                     if (!string.IsNullOrEmpty(filterColumnName) && filter && !string.IsNullOrEmpty(contains))
                     {
-                        dealerModels = GetFilteredDealers(_context, filterColumnName, contains, page, orderBy, asc, out totalRows);
+                        model.DealerModels = GetFilteredDealers(_context, filterColumnName, contains, page, orderBy, asc, out totalRows);
                     }
                     else
                     {
-                        dealerModels = GetDealers(_context, out totalRows, page, orderBy, asc);
+                        model.DealerModels = GetDealers(_context, out totalRows, page, orderBy, asc);
                     }
-                    _cache.Set(cacheKey, dealerModels, GetDefaultCacheOptions());
-                    model.DealerModels = dealerModels;
                     model.UpdatePagination(totalRows);
+                    //cache the model
+                    _cache.Set(cacheKey, model, GetDefaultCacheOptions());
                 }
                 return model;
             }

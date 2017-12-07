@@ -75,7 +75,6 @@ namespace AuthorizationLab.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> DoLogin([FromForm]string userName = "", [FromForm]string pwd = "")
         {
-
             var loginLevel = GetLoginLevel(userName, pwd);
             if (loginLevel == LoginLevel.Error) return LoginFail();
             if (loginLevel == LoginLevel.NoPermission) return NoPermission();
@@ -101,12 +100,12 @@ namespace AuthorizationLab.Controllers
 
         private IActionResult LoginFail()
         {
-            TempData["LoginStatus"] = "Login failed."; //pass data to redirect
+            TempData[LoginStatusKey] = "Login failed."; //pass data to redirect
             return RedirectToAction("Login", "Account");
         }
         private IActionResult NoPermission()
         {
-            TempData["LoginStatus"] = "No permission found."; //pass data to redirect
+            TempData[LoginStatusKey] = "No permission found."; //pass data to redirect
             return RedirectToAction("Login", "Account");
         }
 
